@@ -199,6 +199,24 @@
 
         #keterangan option[disabled] { display: none; }
     </style>
+
+<button onclick="bukaModalAntrean()" style="position:fixed; bottom:20px; right:20px; background:#f39c12; color:white; border:none; padding:10px 15px; border-radius:50px; cursor:pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index:100;">
+    📦 Antrean: <span id="label-jumlah-antrean">0</span>
+</button>
+
+<div id="modal-antrean" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:white; width:90%; max-width:400px; border-radius:15px; padding:20px; max-height:80vh; overflow-y:auto; position:relative;">
+        <h3 style="margin-top:0;">Daftar Antrean Offline</h3>
+        <hr>
+        <div id="daftar-item-antrean" style="margin-bottom:20px;">
+            </div>
+        <div style="display:flex; gap:10px;">
+            <button onclick="kirimManual()" id="btn-kirim-manual" style="flex:1; background:var(--primary); color:white; border:none; padding:12px; border-radius:8px; cursor:pointer;">Kirim Sekarang</button>
+            <button onclick="tutupModalAntrean()" style="flex:1; background:#95a5a6; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer;">Tutup</button>
+        </div>
+    </div>
+</div>
+    
 </head>
 <body data-theme="dark" onclick="toggleFullscreen()"> 
     <div id="status-kirim"></div>
@@ -321,6 +339,89 @@
 </div>
  
     <script>
+
+// Fungsi membuka modal dan menampilkan data
+async function bukaModalAntrean() {
+    const modal = document.getElementById('modal-antrean');
+    const container = document.getElementById('daftar-item-antrean');
+    container.innerHTML = "Memuat data...";
+    modal.style.display = 'flex';
+
+    const transaction = db.transaction(["antrean"], "readonly");
+    const store = transaction.objectStore("antrean");
+    const req = store.getAll();
+
+    req.onsuccess = function() {
+        const items = req.result;
+        document.getElementById('label-jumlah-antrean').innerText = items.length;
+        
+        if (items.length === 0) {
+            container.innerHTML = "<p style='color:#999; text-align:center;'>Tidak ada data offline.</p>";
+            document.getElementById('btn-kirim-manual').disabled = true;
+            return;
+        }
+
+        document.getElementById('btn-kirim-manual').disabled = false;
+        container.innerHTML = items.map(item => `
+            <div style="border-bottom:1px solid #eee; padding:8px 0;">
+                <strong>${item.nama}</strong><br>
+                <small style="color:#666;">${item.keterangan}</small>
+            </div>
+        `).join('');
+    };
+}
+
+function tutupModalAntrean() {
+    document.getElementById('modal-antrean').style.display = 'none';
+}
+
+// Fungsi kirim manual dari tombol pop-up
+async function kirimManual() {
+    const btn = document.getElementById('btn-kirim-manual');
+    btn.innerText = "Mengirim...";
+    btn.disabled = true;
+
+    // Memancing Service Worker untuk melakukan sinkronisasi
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        const registration = await navigator.serviceWorker.ready;
+        try {
+            await registration.sync.register('sinkron-presensi');
+            updateStatusUI("🚀 SINKRONISASI DIPICU!", "var(--primary)");
+            
+            // Beri jeda sedikit agar SW selesai bekerja lalu tutup modal
+            setTimeout(() => {
+                tutupModalAntrean();
+                bukaModalAntrean(); // Refresh tampilan
+                btn.innerText = "Kirim Sekarang";
+            }, 3000);
+        } catch (e) {
+            alert("Gagal memicu sinkronisasi manual.");
+            btn.disabled = false;
+            btn.innerText = "Kirim Sekarang";
+        }
+    } else {
+        alert("Browser tidak mendukung sinkronisasi manual.");
+    }
+}
+
+// Update jumlah antrean di tombol secara real-time
+function updateJumlahAntreanBadge() {
+    if (!db) return;
+    const transaction = db.transaction(["antrean"], "readonly");
+    const store = transaction.objectStore("antrean");
+    const req = store.count();
+    req.onsuccess = () => {
+        document.getElementById('label-jumlah-antrean').innerText = req.result;
+    };
+}
+
+// Panggil fungsi update badge sesaat setelah DB siap
+// Di dalam onsuccess request indexedDB open
+request.onsuccess = function(event) {
+    db = event.target.result;
+    updateJumlahAntreanBadge(); 
+};
+        
         // INISIALISASI DATABASE OFFLINE
         const dbName = "PresensiOfflineDB";
         let db;
