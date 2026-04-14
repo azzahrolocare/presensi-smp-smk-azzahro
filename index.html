@@ -562,7 +562,7 @@
                 else btn.classList.remove('ada-data');
             };
         }
-
+        //Mengirim data offline
         function bukaModalAntrean(e) {
             if(e) e.stopPropagation();
             const modal = document.getElementById('modal-antrean');
@@ -587,7 +587,7 @@
                 btnKirim.disabled = false;
                 btnKirim.style.opacity = "1";
                 btnKirim.style.background = "var(--primary)";
-                textBtn.innerText = "KIRIM SEKARANG";
+                textBtn.innerText = "KIRIM";
                 textBtn.classList.remove('loading-dots');
 
                 container.innerHTML = items.map(item => `
@@ -662,6 +662,7 @@
 
                 updateJumlahAntreanBadge();
                 updateStatusUI("🔄 SEMUA DATA TERKIRIM!", "var(--primary)");
+                //TOMBOL KIRIM PADAM
                 setTimeout(() => {
                     tutupModalAntrean();
                     btnKirim.disabled = false;
