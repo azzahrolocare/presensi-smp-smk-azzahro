@@ -1,6 +1,7 @@
-const CACHE_NAME = 'presensi-azzahro-v1.0.5';
+const CACHE_NAME = 'presensi-azzahro-v1.0.6';
 const OFFLINE_URL = './offline.html';
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCXbDTuaFkN7GlcXJxaFgDaKPEp2G9vySF1IKfWxUCTuEOCYt39nMmlEmI25pz4PSd/exec';
+const REKAP_URL = 'https://azzahrolocare.github.io/rekapitulasi-presensi-siswa/';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -14,7 +15,7 @@ const ASSETS_TO_CACHE = [
   './icon-apk-presensi-azzahro.png'
 ];
 
-// 1. Install: Simpan aset ke cache
+// 1. INSTALL: Simpan aset ke cache
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
@@ -22,7 +23,7 @@ self.addEventListener('install', (e) => {
   );
 });
 
-// 2. Activate: Bersihkan cache lama
+// 2. ACTIVATE: Bersihkan cache lama
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -36,7 +37,7 @@ self.addEventListener('activate', (e) => {
   return self.clients.claim();
 });
 
-// 3. Fetch: Ambil aset dari cache, biarkan Google Script lewat
+// 3. FETCH: Proxy Cache
 self.addEventListener('fetch', (e) => {
   if (e.request.url.includes('script.google.com')) return;
   e.respondWith(
@@ -44,15 +45,15 @@ self.addEventListener('fetch', (e) => {
   );
 });
 
-// 4. Listener Background Sync
+// 4. SYNC: Jalankan pengiriman data saat internet kembali tersedia
 self.addEventListener('sync', (e) => {
   if (e.tag === 'sinkron-presensi') {
-    console.log('SW: Sinkronisasi latar belakang berjalan...');
+    console.log('SW: Sinkronisasi latar belakang dimulai...');
     e.waitUntil(kirimDataDariIndexedDB());
   }
 });
 
-// 5. Fungsi kirim data dari antrean lokal
+// 5. LOGIKA PENGIRIMAN DATA MASSAL (STABIL)
 async function kirimDataDariIndexedDB() {
   const dbPromise = new Promise((resolve) => {
     const request = indexedDB.open("PresensiOfflineDB", 1);
@@ -71,32 +72,48 @@ async function kirimDataDariIndexedDB() {
 
   if (dataAntrean.length > 0) {
     let suksesCount = 0;
+    let gagalCount = 0;
+
     for (const item of dataAntrean) {
       try {
+        // Gunakan timeout agar pengiriman banyak data tidak menggantung
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); 
+
         await fetch(`${SCRIPT_URL}?nama=${encodeURIComponent(item.nama)}&keterangan=${encodeURIComponent(item.keterangan)}`, { 
           method: 'GET', 
-          mode: 'no-cors' 
+          mode: 'no-cors',
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         suksesCount++;
+        
+        // Hapus satu per satu dari DB setelah sukses kirim
+        const deleteTx = db.transaction(["antrean"], "readwrite");
+        deleteTx.objectStore("antrean").delete(item.id || dataAntrean.indexOf(item) + 1);
+        
+        // Jeda kecil (0.3 detik) antar pengiriman agar tidak dianggap spam oleh server
+        await new Promise(r => setTimeout(r, 300));
+        
       } catch (err) {
-        console.error("SW: Gagal mengirim data, akan dicoba lagi nanti.");
-        return; // Berhenti agar data tetap di IndexedDB
+        console.error("SW: Gagal kirim satu item, lanjut berikutnya.", err);
+        gagalCount++;
+        continue; 
       }
     }
     
-    // Hapus antrean jika semua terkirim
-    const clearTx = db.transaction(["antrean"], "readwrite");
-    clearTx.objectStore("antrean").clear();
-
-    // TAMPILKAN NOTIFIKASI KE SISTEM HP
-    showNotification(
-      `Sinkronisasi Berhasil!`, 
-      `${suksesCount} data presensi offline telah terkirim ke server.`
-    );
+    // Tampilkan notifikasi hasil akhir
+    if (suksesCount > 0) {
+      showNotification(
+        `Sinkronisasi Selesai`, 
+        `${suksesCount} data berhasil terkirim. ${gagalCount > 0 ? gagalCount + ' tertunda.' : 'Klik untuk rekap.'}`
+      );
+    }
   }
 }
 
-// 6. Fungsi pemicu Notifikasi Bar
+// 6. NOTIFIKASI SISTEM
 function showNotification(title, body) {
   if (self.registration.showNotification) {
     self.registration.showNotification(title, {
@@ -105,33 +122,26 @@ function showNotification(title, body) {
       badge: './icon-apk-presensi-azzahro.png',
       vibrate: [200, 100, 200],
       tag: 'sync-notification',
-      data: {
-        url: 'https://azzahrolocare.github.io/rekapitulasi-presensi-siswa/'
-      },
-      requireInteraction: true // Notifikasi tetap ada sampai diklik atau di-swipe
+      data: { url: REKAP_URL },
+      requireInteraction: true 
     });
   }
 }
 
-// Listener untuk menangani klik pada notifikasi
+// 7. HANDLING KLIK NOTIFIKASI
 self.addEventListener('notificationclick', (e) => {
-  e.notification.close(); // Tutup notifikasi setelah diklik
-
-  // URL tujuan saat notifikasi diklik
-  const urlToOpen = 'https://azzahrolocare.github.io/rekapitulasi-presensi-siswa/';
-
+  e.notification.close();
+  
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // Jika tab aplikasi sudah terbuka, fokuskan ke tab tersebut dan arahkan URL-nya
       for (var i = 0; i < windowClients.length; i++) {
         var client = windowClients[i];
-        if (client.url === urlToOpen && 'focus' in client) {
+        if (client.url === REKAP_URL && 'focus' in client) {
           return client.focus();
         }
       }
-      // Jika belum ada tab yang terbuka, buka jendela baru
       if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
+        return clients.openWindow(REKAP_URL);
       }
     })
   );
