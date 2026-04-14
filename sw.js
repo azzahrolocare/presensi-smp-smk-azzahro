@@ -5,7 +5,7 @@ const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './offline.html',
-  './manifest.json', // Penting agar PWA tetap valid saat offline
+  './manifest.json',
   './logo-smp-azzahro.png',
   './logo-smk-azzahro.png',
   'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
@@ -23,7 +23,7 @@ self.addEventListener('install', (e) => {
   );
 });
 
-// Activate: Hapus cache lama (v1.0.1, dll)
+// Activate: Hapus cache lama
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -40,8 +40,14 @@ self.addEventListener('activate', (e) => {
   return self.clients.claim();
 });
 
-// Fetch: Ambil dari cache, jika gagal baru internet
+// Fetch: Logika cerdas untuk aset vs API
 self.addEventListener('fetch', (e) => {
+  // PENTING: Jangan masukkan permintaan ke Google Script ke dalam Cache
+  // Biarkan file index.html yang menangani logika offline-nya sendiri
+  if (e.request.url.includes('script.google.com')) {
+    return; 
+  }
+
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -49,8 +55,7 @@ self.addEventListener('fetch', (e) => {
       }
 
       return fetch(e.request).catch(() => {
-        // JIKA OFFLINE:
-        // Cek apakah permintaan berupa navigasi halaman
+        // Jika benar-benar offline dan meminta halaman
         if (e.request.mode === 'navigate' || (e.request.method === 'GET' && e.request.headers.get('accept').includes('text/html'))) {
           return caches.match(OFFLINE_URL);
         }
