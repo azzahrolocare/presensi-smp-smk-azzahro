@@ -9,6 +9,7 @@ const ASSETS_TO_CACHE = [
   './manifest.json',
   './logo-smp-azzahro.png',
   './logo-smk-azzahro.png',
+  './notification/Notif01.mp3',
   'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
   './icon-apk-presensi-azzahro.png'
 ];
