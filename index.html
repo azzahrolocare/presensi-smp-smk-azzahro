@@ -660,6 +660,13 @@
                     await new Promise(r => setTimeout(r, 100));
                 }
 
+                // --- FITUR BARU: NOTIFIKASI SUARA SELESAI ---
+        const config = JSON.parse(localStorage.getItem('absensiConfig')) || { sound: 'notification/Notif01.mp3' };
+        // Memutar suara 'Done.mp3' atau suara sukses lainnya saat antrean habis
+        const audioDone = new Audio(rawURL + 'notification/Done.mp3'); 
+        audioDone.play().catch(e => console.log("Gagal memutar notifikasi suara:", e));
+        // --------------------------------------------
+                
                 updateJumlahAntreanBadge();
                 updateStatusUI("🔄 SEMUA DATA TERKIRIM!", "var(--primary)");
                 //TOMBOL KIRIM PADAM
