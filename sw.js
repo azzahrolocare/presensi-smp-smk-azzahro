@@ -78,7 +78,7 @@ async function kirimDataDariIndexedDB() {
       try {
         // Gunakan timeout agar pengiriman banyak data tidak menggantung
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); 
+        const timeoutId = setTimeout(() => controller.abort(), 15000); 
 
         await fetch(`${SCRIPT_URL}?nama=${encodeURIComponent(item.nama)}&keterangan=${encodeURIComponent(item.keterangan)}`, { 
           method: 'GET', 
