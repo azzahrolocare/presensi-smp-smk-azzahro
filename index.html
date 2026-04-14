@@ -451,31 +451,36 @@
         }
 
         // LOGIKA KIRIM DATA (OFFLINE SUPPORT)
-        function sendPresence(nama) {
-            const ketValue = document.getElementById('keterangan').value;
-            if (!ketValue) {
-                updateStatusUI("✖ PILIH KETERANGAN DULU!", "#e74c3c");
-                isProcessing = false;
-                document.getElementById('selection-overlay').style.display = 'none';
-                return;
-            }
+       function sendPresence(nama) {
+    const ketValue = document.getElementById('keterangan').value;
+    if (!ketValue) {
+        updateStatusUI("✖ PILIH KETERANGAN DULU!", "#e74c3c");
+        isProcessing = false;
+        document.getElementById('selection-overlay').style.display = 'none';
+        return;
+    }
 
-            document.getElementById('last-name-display').value = nama;
-            const config = JSON.parse(localStorage.getItem('absensiConfig')) || { sound: 'notification/Notif01.mp3' };
-            new Audio(rawURL + config.sound).play().catch(() => {});
-            
-            const dataPresensi = { nama: nama, keterangan: ketValue };
+    document.getElementById('last-name-display').value = nama;
+    const config = JSON.parse(localStorage.getItem('absensiConfig')) || { sound: 'notification/Notif01.mp3' };
+    new Audio(rawURL + config.sound).play().catch(() => {});
+    
+    const dataPresensi = { nama: nama, keterangan: ketValue };
 
-            if (navigator.onLine) {
-                fetch(`${scriptURL}?nama=${encodeURIComponent(nama)}&keterangan=${encodeURIComponent(ketValue)}`, { method: 'GET', mode: 'no-cors' })
-                .then(() => updateStatusUI("✔ TERKIRIM: " + nama, "var(--primary)"))
-                .catch(() => simpanKeOffline(dataPresensi));
-            } else {
-                simpanKeOffline(dataPresensi);
-            }
-            
-            document.getElementById('selection-overlay').style.display = 'none';
-        }
+    if (navigator.onLine) {
+        // OPTIMASI: Langsung munculkan notifikasi tanpa menunggu .then dari fetch
+        updateStatusUI("✔ TERKIRIM: " + nama, "var(--primary)");
+        
+        fetch(`${scriptURL}?nama=${encodeURIComponent(nama)}&keterangan=${encodeURIComponent(ketValue)}`, { 
+            method: 'GET', 
+            mode: 'no-cors',
+            cache: 'no-store' // Mencegah browser mengambil data lama
+        });
+    } else {
+        simpanKeOffline(dataPresensi);
+    }
+    
+    document.getElementById('selection-overlay').style.display = 'none';
+}
 
 function simpanKeOffline(data) {
     if (!db) return;
