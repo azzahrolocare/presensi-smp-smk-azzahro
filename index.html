@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
      <link rel="icon" type="image/png" href="https://github.com/masrahmat-id/presensi-smp-smk-azzahro/raw/main/icon-apk-presensi-azzahro.png">
      <link rel="apple-touch-icon" href="https://github.com/masrahmat-id/presensi-smp-smk-azzahro/raw/main/icon-apk-presensi-azzahro.png">
-    <title>PRESENSI ONLINE SMP & SMK AZ-ZAHRO</title>
+    <title>PRESENSI DIGITAL SMP & SMK AZ-ZAHRO</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212" media="(prefers-color-scheme: light)">
@@ -605,7 +605,7 @@
 
         async function kirimManual() {
             if (!navigator.onLine) {
-                updateStatusUI("⚠️ ANDA MASIH OFFLINE!\nSILAKAN HUBUNGKAN KE INTERNET TERLEBIH DAHULU", "#e67e22");
+                updateStatusUI("⚠️ ANDA SEDANG OFFLINE!\nSILAKAN HUBUNGKAN KE INTERNET TERLEBIH DAHULU", "#e67e22");
                 return;
             }
 
@@ -623,7 +623,7 @@
             btnKirim.style.background = "#555";
             
             // AKTIFKAN ANIMASI ELLIPSIS (5 TITIK)
-            textBtn.innerText = "SEDANG MENGIRIM";
+            textBtn.innerText = "MENGIRIM";
             textBtn.classList.add('loading-dots');
             
             btnTutup.disabled = true;
