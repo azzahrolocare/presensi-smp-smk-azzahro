@@ -199,7 +199,7 @@
 
         #keterangan option[disabled] { display: none; }
 
-        /* CSS TAMBAHAN UNTUK ANTREAN */
+        /* Tombol Antrean & Modal Antrean */
         .btn-antrean-float {
             position: fixed; bottom: 20px; right: 20px; 
             background: #f39c12; color: white; border: none; 
@@ -217,11 +217,6 @@
             padding: 20px; max-height: 80vh; overflow-y: auto; border: 2px solid var(--primary);
             color: var(--text-main);
         }
-        /* Loading Animation */
-        @keyframes pulse-loading {
-            0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
-        }
-        .loading-text { animation: pulse-loading 1s infinite; }
     </style>
 </head>
 <body data-theme="dark" onclick="toggleFullscreen()"> 
@@ -236,11 +231,10 @@
         <div class="modal-content-antrean" onclick="event.stopPropagation()">
             <h3 style="margin-top:0; color:var(--primary); text-align:center;">ANTREAN OFFLINE</h3>
             <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:15px 0;">
-            <div id="daftar-item-antrean" style="margin-bottom:20px; max-height:300px; overflow-y:auto;">
-                </div>
+            <div id="daftar-item-antrean" style="margin-bottom:20px; max-height:300px; overflow-y:auto;"></div>
             <div style="display:flex; gap:10px;">
                 <button onclick="kirimManual()" id="btn-kirim-manual" style="flex:1; background:var(--primary); color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">KIRIM SEKARANG</button>
-                <button onclick="tutupModalAntrean()" id="btn-tutup-antrean" style="flex:1; background:#7f8c8d; color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">TUTUP</button>
+                <button onclick="tutupModalAntrean()" style="flex:1; background:#7f8c8d; color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">TUTUP</button>
             </div>
         </div>
     </div>
@@ -349,16 +343,17 @@
     </div>
 
     <div id="pwa-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
-        <div style="background: var(--bg-card); width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; border: 2px solid var(--primary); text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-            <img src="https://github.com/masrahmat-id/presensi-smp-smk-azzahro/raw/main/icon-apk-presensi-azzahro.png" style="width: 80px; height: 80px; margin-bottom: 15px; border-radius: 15px;">
-            <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-main);">Instal Aplikasi</h3>
-            <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px;">Pasang Aplikasi Presensi Digital Az-Zahro di layar utama Anda untuk akses lebih cepat.</p>
-            <div style="display: flex; gap: 10px;">
-                <button id="btnBatal" style="flex: 1; background: transparent; color: #999; border: 1px solid #444; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">Nanti</button>
-                <button id="btnInstalPop" style="flex: 1; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">Instal</button>
-            </div>
+    <div style="background: var(--bg-card); width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; border: 2px solid var(--primary); text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+        <img src="https://github.com/masrahmat-id/presensi-smp-smk-azzahro/raw/main/icon-apk-presensi-azzahro.png" style="width: 80px; height: 80px; margin-bottom: 15px; border-radius: 15px;">
+        <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-main);">Instal Aplikasi</h3>
+        <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px;">Pasang Aplikasi Presensi Digital Az-Zahro di layar utama Anda untuk akses lebih cepat.</p>
+        
+        <div style="display: flex; gap: 10px;">
+            <button id="btnBatal" style="flex: 1; background: transparent; color: #999; border: 1px solid #444; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">Nanti</button>
+            <button id="btnInstalPop" style="flex: 1; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">Instal</button>
         </div>
     </div>
+</div>
  
     <script>
         // INISIALISASI DATABASE OFFLINE
@@ -373,7 +368,7 @@
         };
         requestDB.onsuccess = (e) => { 
             db = e.target.result; 
-            updateJumlahAntreanBadge(); 
+            updateJumlahAntreanBadge();
         };
 
         function toggleFullscreen() {
@@ -484,6 +479,7 @@
             toggleSettings();
         }
 
+        // FUNGSI PEMBANTU STATUS
         function updateStatusUI(pesan, warna) {
             const s = document.getElementById('status-kirim');
             s.innerText = pesan;
@@ -492,7 +488,7 @@
             setTimeout(() => { s.style.display = "none"; s.style.backgroundColor = "var(--primary)"; isProcessing = false; detectedBarcodes.clear(); }, 2000);
         }
 
-        // LOGIKA ANTREAN & SINKRONISASI MANUAL
+        // MODAL ANTREAN & SINKRONISASI BERSIH
         function updateJumlahAntreanBadge() {
             if (!db) return;
             const transaction = db.transaction(["antrean"], "readonly");
@@ -503,7 +499,7 @@
             };
         }
 
-        async function bukaModalAntrean(e) {
+        function bukaModalAntrean(e) {
             if(e) e.stopPropagation();
             const modal = document.getElementById('modal-antrean');
             const container = document.getElementById('daftar-item-antrean');
@@ -537,69 +533,24 @@
             document.getElementById('modal-antrean').style.display = 'none';
         }
 
-        // LOGIKA KIRIM MANUAL (COUNTDOWN + LOADING + DELETE DATA)
         async function kirimManual() {
-            const btn = document.getElementById('btn-kirim-manual');
-            const btnTutup = document.getElementById('btn-tutup-antrean');
-            const container = document.getElementById('daftar-item-antrean');
-            
             if (!navigator.onLine) {
-                alert("Anda sedang offline. Tidak dapat mengirim data!");
+                alert("Anda masih offline! Tidak bisa mengirim.");
                 return;
             }
-
-            // HITUNG MUNDUR SEBELUM PROSES
-            let countdown = 3;
-            btnTutup.style.display = 'none'; // Sembunyikan tombol tutup agar tidak terganggu
-            
-            const timer = setInterval(() => {
-                btn.innerText = `MENGIRIM DALAM ${countdown}...`;
-                countdown--;
-                if (countdown < 0) {
-                    clearInterval(timer);
-                    prosesSinkronisasi(btn, container, btnTutup);
-                }
-            }, 1000);
-        }
-
-        async function prosesSinkronisasi(btn, container, btnTutup) {
-            btn.classList.add('loading-text');
-            btn.innerText = "SINKRONISASI...";
+            const btn = document.getElementById('btn-kirim-manual');
+            btn.innerText = "MENGIRIM...";
             btn.disabled = true;
 
-            const transaction = db.transaction(["antrean"], "readwrite");
-            const store = transaction.objectStore("antrean");
-            const request = store.getAll();
-
-            request.onsuccess = async () => {
-                const dataAntrean = request.result;
-                if (dataAntrean.length > 0) {
-                    // Kirim satu per satu
-                    for (const item of dataAntrean) {
-                        try {
-                            await fetch(`${scriptURL}?nama=${encodeURIComponent(item.nama)}&keterangan=${encodeURIComponent(item.keterangan)}`, { method: 'GET', mode: 'no-cors' });
-                        } catch (err) { console.error("Gagal kirim item:", item.nama); }
-                    }
-                    
-                    // Hapus data yang sudah terkirim
-                    const clearRequest = store.clear();
-                    clearRequest.onsuccess = () => {
-                        updateJumlahAntreanBadge();
-                        btn.classList.remove('loading-text');
-                        btn.innerText = "KIRIM SEKARANG";
-                        btn.disabled = false;
-                        btnTutup.style.display = 'block';
-                        
-                        updateStatusUI("🔄 DATA OFFLINE TERSINKRON!", "var(--primary)");
-                        container.innerHTML = "<p style='color:#2ecc71; text-align:center;'>✅ Semua data berhasil terkirim.</p>";
-                        
-                        setTimeout(() => tutupModalAntrean(), 1500);
-                    };
-                }
-            };
+            await sinkronkanData();
+            
+            setTimeout(() => {
+                btn.innerText = "KIRIM SEKARANG";
+                tutupModalAntrean();
+            }, 1500);
         }
 
-        // FUNGSI SEND PRESENCE LAMA
+        // LOGIKA KIRIM DATA
         function sendPresence(nama) {
             const ketValue = document.getElementById('keterangan').value;
             if (!ketValue) {
@@ -618,14 +569,11 @@
             if (navigator.onLine) {
                 updateStatusUI("✔ TERKIRIM: " + nama, "var(--primary)");
                 fetch(`${scriptURL}?nama=${encodeURIComponent(nama)}&keterangan=${encodeURIComponent(ketValue)}`, { 
-                    method: 'GET', 
-                    mode: 'no-cors',
-                    cache: 'no-store'
+                    method: 'GET', mode: 'no-cors', cache: 'no-store'
                 });
             } else {
                 simpanKeOffline(dataPresensi);
             }
-            
             document.getElementById('selection-overlay').style.display = 'none';
         }
 
@@ -641,33 +589,54 @@
             };
         }
 
-        // Sinkronisasi otomatis saat online kembali
-        window.addEventListener('online', () => {
-            if (db) {
-                const transaction = db.transaction(["antrean"], "readwrite");
-                const store = transaction.objectStore("antrean");
-                const req = store.count();
-                req.onsuccess = () => {
-                    if (req.result > 0) {
-                        updateStatusUI("🌐 KEMBALI ONLINE. SILAKAN KIRIM ANTREAN!", "#3498db");
+        async function sinkronkanData() {
+            if (!db || !navigator.onLine) return;
+            const transaction = db.transaction(["antrean"], "readwrite");
+            const store = transaction.objectStore("antrean");
+            const request = store.getAll();
+
+            request.onsuccess = async () => {
+                const dataAntrean = request.result;
+                if (dataAntrean.length > 0) {
+                    for (const item of dataAntrean) {
+                        try {
+                            await fetch(`${scriptURL}?nama=${encodeURIComponent(item.nama)}&keterangan=${encodeURIComponent(item.keterangan)}`, { method: 'GET', mode: 'no-cors' });
+                        } catch (e) { console.log("Gagal kirim item:", item.nama); }
                     }
-                };
-            }
-        });
+                    
+                    // Bersihkan Database setelah semua terkirim
+                    const clearTrans = db.transaction(["antrean"], "readwrite");
+                    clearTrans.objectStore("antrean").clear();
+                    clearTrans.oncomplete = () => {
+                        updateJumlahAntreanBadge();
+                        // Kosongkan tampilan modal secara instan
+                        document.getElementById('daftar-item-antrean').innerHTML = "<p style='color:#2ecc71; text-align:center;'>Berhasil dikirim!</p>";
+                        updateStatusUI("🔄 DATA OFFLINE TERSINKRON!", "var(--primary)");
+                    };
+                }
+            };
+        }
+
+        window.addEventListener('online', sinkronkanData);
 
         applySettings();
         const html5QrCode = new Html5Qrcode("reader");
 
+        // FUNGSI PROSES SCAN
         function handleScan(decodedText) {
             if (isProcessing) return;
+
             detectedBarcodes.add(decodedText.trim());
+
             if (scanTimer) clearTimeout(scanTimer);
             scanTimer = setTimeout(() => {
                 const results = Array.from(detectedBarcodes);
+                
                 if (results.length > 1) {
                     isProcessing = true;
                     const overlay = document.getElementById('selection-overlay');
                     overlay.innerHTML = '<p style="color:white; font-size:12px; font-weight:bold; margin-bottom:10px;">TERDETEKSI ' + results.length + ' BARCODE. PILIH NAMA:</p>';
+                    
                     results.forEach(nama => {
                         const btn = document.createElement('div');
                         btn.className = 'barcode-option';
@@ -675,11 +644,19 @@
                         btn.onclick = (e) => { e.stopPropagation(); sendPresence(nama); };
                         overlay.appendChild(btn);
                     });
+
                     const btnBatal = document.createElement('div');
-                    btnBatal.className = 'barcode-option'; btnBatal.style.background = '#7f8c8d';
+                    btnBatal.className = 'barcode-option';
+                    btnBatal.style.background = '#7f8c8d';
                     btnBatal.innerText = 'BATAL SCAN ULANG';
-                    btnBatal.onclick = (e) => { e.stopPropagation(); overlay.style.display = 'none'; isProcessing = false; detectedBarcodes.clear(); };
+                    btnBatal.onclick = (e) => { 
+                        e.stopPropagation();
+                        overlay.style.display = 'none'; 
+                        isProcessing = false; 
+                        detectedBarcodes.clear();
+                    };
                     overlay.appendChild(btnBatal);
+                    
                     overlay.style.display = 'flex';
                 } else if (results.length === 1) {
                     isProcessing = true;
@@ -695,35 +672,42 @@
         ).catch(err => console.error(err));
     </script>
 
-    <script>
-        let promptInstalasi;
-        const popUp = document.getElementById('pwa-popup');
-        const tombolInstal = document.getElementById('btnInstalPop');
-        const tombolBatal = document.getElementById('btnBatal');
+<script>
+    let promptInstalasi;
+    const popUp = document.getElementById('pwa-popup');
+    const tombolInstal = document.getElementById('btnInstalPop');
+    const tombolBatal = document.getElementById('btnBatal');
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            promptInstalasi = e;
-            setTimeout(() => { popUp.style.display = 'flex'; }, 2000);
-        });
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        promptInstalasi = e;
+        setTimeout(() => {
+            popUp.style.display = 'flex';
+        }, 2000);
+    });
 
-        tombolInstal.addEventListener('click', async () => {
-            if (!promptInstalasi) return;
-            popUp.style.display = 'none';
-            promptInstalasi.prompt();
-            await promptInstalasi.userChoice;
-            promptInstalasi = null;
-        });
+    tombolInstal.addEventListener('click', async () => {
+        if (!promptInstalasi) return;
+        popUp.style.display = 'none';
+        promptInstalasi.prompt();
+        const { outcome } = await promptInstalasi.userChoice;
+        promptInstalasi = null;
+    });
 
-        tombolBatal.addEventListener('click', () => { popUp.style.display = 'none'; });
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(() => console.log("SW Presensi Terdaftar!"))
-                .catch(err => console.log("Gagal Daftar SW:", err));
-        }
-        if ("Notification" in window) { Notification.requestPermission(); }
-    </script>
+    tombolBatal.addEventListener('click', () => {
+        popUp.style.display = 'none';
+    });
+
+    window.addEventListener('appinstalled', () => {
+        popUp.style.display = 'none';
+    });
+</script>    
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log("SW Presensi Terdaftar!"))
+      .catch(err => console.log("Gagal Daftar SW:", err));
+  }
+</script>
 </body>
 </html>
