@@ -202,18 +202,21 @@
 
         #keterangan option[disabled] { display: none; }
 
-        /* ANIMASI ELLIPSIS UNTUK TOMBOL */
+        /* ANIMASI ELLIPSIS UNTUK TOMBOL (5 TITIK) */
         .loading-dots::after {
             display: inline-block;
-            animation: ellipsis 1.5s infinite;
+            animation: ellipsis 2s infinite;
             content: ".";
-            width: 1em;
+            width: 2.5em; /* Lebih lebar untuk menampung 5 titik */
             text-align: left;
         }
         @keyframes ellipsis {
             0% { content: "."; }
-            33% { content: ".."; }
-            66% { content: "..."; }
+            20% { content: ".."; }
+            40% { content: "..."; }
+            60% { content: "...."; }
+            80% { content: "....."; }
+            100% { content: "."; }
         }
 
         .btn-antrean-float {
@@ -619,7 +622,7 @@
             btnKirim.style.opacity = "0.6";
             btnKirim.style.background = "#555";
             
-            // AKTIFKAN ANIMASI ELLIPSIS
+            // AKTIFKAN ANIMASI ELLIPSIS (5 TITIK)
             textBtn.innerText = "SEDANG MENGIRIM";
             textBtn.classList.add('loading-dots');
             
