@@ -421,23 +421,6 @@
 </div>
  
     <script>
-        function hapusCacheApp() {
-    if (confirm("Hapus cache dan muat ulang aplikasi? Ini berguna jika ada pembaruan sistem.")) {
-        // Menghapus semua cache yang terdaftar di browser
-        caches.keys().then(function(names) {
-            for (let name of names) caches.delete(name);
-        }).then(function() {
-            // Unregister Service Workers
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                }
-                // Reload halaman untuk mengambil data fresh dari server
-                window.location.reload(true);
-            });
-        });
-    }
-}
         const dbName = "PresensiOfflineDB";
         let db;
         const requestDB = indexedDB.open(dbName, 1);
@@ -1634,5 +1617,25 @@
         navigator.serviceWorker.register('./sw.js').then(() => console.log("SW Aktif!"));
       }
     </script>
+
+      <script>
+            function hapusCacheApp() {
+    if (confirm("Hapus cache dan muat ulang aplikasi? Ini berguna jika ada pembaruan sistem.")) {
+        // Menghapus semua cache yang terdaftar di browser
+        caches.keys().then(function(names) {
+            for (let name of names) caches.delete(name);
+        }).then(function() {
+            // Unregister Service Workers
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+                // Reload halaman untuk mengambil data fresh dari server
+                window.location.reload(true);
+            });
+        });
+    }
+}
+</script> 
 </body>
 </html>
