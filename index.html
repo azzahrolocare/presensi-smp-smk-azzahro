@@ -387,7 +387,7 @@
             <div class="setting-item"><span>Mode Terang</span><input type="checkbox" id="theme-toggle" onchange="previewLayout()"></div>
             <a href="https://azzahrolocare.github.io/rekapitulasi-presensi-siswa/" target="_blank" class="btn-database-trigger" id="btn-rekap">REKAPITULASI PRESENSI SISWA</a>
             <div class="btn-about-trigger" onclick="showAbout()">ⓘ Tentang Aplikasi</div>
-            <button onclick="hapusCache()" class="btn-save" style="background:#e74c3c; margin-top:8px;">HAPUS CACHE</button>
+            <button onclick="tanyaHapusCache()" class="btn-save" style="background:#e74c3c; margin-top:8px;">HAPUS CACHE</button>
             <button class="btn-save" onclick="saveSettings()">SIMPAN</button>
         </div>
 
@@ -416,7 +416,23 @@
         </div>
     </div>
 </div>
- 
+
+<div id="confirm-hapus-cache" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; align-items:center; justify-content:center;">
+    <div style="background: var(--bg-card); width: 85%; max-width: 320px; padding: 20px; border-radius: 20px; border: 2px solid #e74c3c; text-align: center;">
+        <h3 style="margin-bottom:10px;">Yakin hapus cache?</h3>
+        <p style="font-size:12px; opacity:0.8;">Semua data offline & pengaturan akan dihapus.</p>
+
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button onclick="batalHapusCache()" style="flex:1; background:#7f8c8d; color:white; border:none; padding:10px; border-radius:10px; font-weight:bold;">
+                BATAL
+            </button>
+            <button onclick="konfirmasiHapusCache()" style="flex:1; background:#e74c3c; color:white; border:none; padding:10px; border-radius:10px; font-weight:bold;">
+                HAPUS
+            </button>
+        </div>
+    </div>
+</div>
+    
     <script>
         const dbName = "PresensiOfflineDB";
         let db;
@@ -833,7 +849,21 @@
         updateStatusUI("✖ GAGAL MENGHAPUS CACHE!", "#e74c3c");
     }
 }
+
+function tanyaHapusCache() {
+    document.getElementById('confirm-hapus-cache').style.display = 'flex';
+}
+
+function batalHapusCache() {
+    document.getElementById('confirm-hapus-cache').style.display = 'none';
+}
+
+function konfirmasiHapusCache() {
+    document.getElementById('confirm-hapus-cache').style.display = 'none';
+    hapusCache();
+}
     </script>
+    
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').then(() => console.log("SW Aktif!"));
