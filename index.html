@@ -103,7 +103,8 @@ body::before{
   -webkit-backdrop-filter:blur(28px) saturate(1.8);
   box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 -1px 0 rgba(255,255,255,.06);
   display:flex;align-items:center;justify-content:center;
-  padding:10px 16px;min-height:68px;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px 16px;
+  min-height: calc(68px + env(safe-area-inset-top));
 }
 .nav-logos{display:flex;align-items:center;justify-content:center;gap:10px;width:100%}
 .nav-logos img{width:var(--logo-size, 44px);height:var(--logo-size, 44px);object-fit:contain;border-radius:8px;flex-shrink:0}
@@ -119,17 +120,17 @@ body::before{
 /* ── MAIN SCROLL AREA ── */
 #mainScroll{
   flex:1;overflow-y:auto;overflow-x:hidden;
-  padding:80px 16px 96px;
+  padding:calc(80px + env(safe-area-inset-top)) 16px 96px;
   display:flex;flex-direction:column;align-items:center;
 }
 .main-inner{width:100%;max-width:600px;display:flex;flex-direction:column;gap:12px}
 
 @media (min-width:600px){
-  #mainScroll{padding:90px 24px 100px}
+  #mainScroll{padding:calc(90px + env(safe-area-inset-top)) 24px 100px;}
   .scanner-box{min-height:380px}
 }
 @media (min-width:900px){
-  #mainScroll{padding:96px 32px 100px}
+  #mainScroll{padding:calc(96px + env(safe-area-inset-top)) 32px 100px;}
   .main-inner{max-width:720px}
   .scanner-box{min-height:460px}
 }
