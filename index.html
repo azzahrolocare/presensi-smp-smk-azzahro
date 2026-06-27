@@ -3,420 +3,987 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-     <link rel="icon" type="image/png" href="icon-apk-presensi-azzahro.png">
-     <link rel="apple-touch-icon" href="icon-apk-presensi-azzahro.png">
+    <link rel="icon" type="image/png" href="icon-apk-presensi-azzahro.png">
+    <link rel="apple-touch-icon" href="icon-apk-presensi-azzahro.png">
     <title>PRESENSI DIGITAL SMP & SMK AZ-ZAHRO</title>
-    
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+    <meta id="metaThemeColor" name="theme-color" content="#07261a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
+        /* =============================================
+           CSS VARIABLES — TEMA DASAR (EMERALD)
+        ============================================= */
         :root {
-            --primary: #2ecc71;
-            --bg-body: #121212;
-            --bg-gradient: none;
-            --bg-card: #1e1e1e;
+            --body-bg: linear-gradient(135deg,#051a0f 0%,#09331f 25%,#0d5a36 55%,#1a7a4a 75%,#0a4528 100%);
+            --body-solid-bg: #07261a;
+            --glow-1: #198754; --glow-2: #D4AF37; --glow-3: #0ea56a;
+            --glass-bg: linear-gradient(145deg,rgba(255,255,255,.14) 0%,rgba(25,135,84,.08) 50%,rgba(255,255,255,.06) 100%);
+            --glass-border: rgba(255,255,255,.22);
+            --glass-shadow: 0 12px 48px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.15);
+            --badge-bg: linear-gradient(135deg,rgba(25,135,84,.4) 0%,rgba(212,175,55,.28) 100%);
+            --badge-border: rgba(212,175,55,.5);
+            --btn-primary-bg: linear-gradient(135deg,#22a161 0%,#1a7a4a 40%,#146c43 70%,#0F5132 100%);
+            --btn-primary-hover: linear-gradient(135deg,#2dbe78 0%,#22a161 40%,#198754 70%,#146c43 100%);
+            --btn-shadow: rgba(20,108,67,.55);
+            --btn-glow: 0 0 28px rgba(25,135,84,.5),0 0 10px rgba(212,175,55,.2);
+            --panel-accent-bg: linear-gradient(135deg,rgba(5,20,12,.85) 0%,rgba(9,51,31,.7) 50%,rgba(14,82,52,.55) 100%);
+            --panel-accent-border: rgba(212,175,55,.4);
+            --nav-dock-bg: linear-gradient(180deg,rgba(7,26,16,.95) 0%,rgba(5,18,10,.99) 100%);
+            --nav-dock-border: rgba(212,175,55,.3);
+            --icon-circle-pasif: rgba(255,255,255,.12);
+            --icon-circle-ready: linear-gradient(135deg,rgba(26,122,74,.85) 0%,rgba(20,108,67,.75) 100%);
+            --icon-circle-ready-border: rgba(212,175,55,.65);
+            --icon-circle-ready-shadow: 0 4px 20px rgba(25,135,84,.55),0 0 12px rgba(212,175,55,.2);
+            --icon-circle-aktif: linear-gradient(135deg,#D4AF37 0%,#f0c830 60%,#ffe066 100%);
+            --icon-text-aktif: #0F5132;
+            --accent-icon: #D4AF37;
+            --scrollbar-thumb: rgba(212,175,55,.35);
             --text-main: #ffffff;
-            --header-font-size: 0.9rem;
-            --logo-size: 65px;
+            --text-muted: #c8e6d4;
+            --input-bg: rgba(255,255,255,.11);
+            --input-bg-hover: rgba(255,255,255,.17);
+            --input-text: #ffffff;
+            --input-border: rgba(255,255,255,.22);
+            --input-focus-border: rgba(212,175,55,.75);
+            --input-focus-bg: rgba(25,135,84,.18);
+
+            /* Scanner specific */
+            --primary: #D4AF37; /* accent color for scanner border, line, etc */
         }
 
-        [data-theme="light"] {
-            --bg-body: #f0f2f5;
-            --bg-card: #ffffff;
-        }
+        /* =============================================
+           RESET & BASE
+        ============================================= */
+        *, *::before, *::after { box-sizing: border-box; }
 
         html, body {
             height: 100%; margin: 0; padding: 0;
-            overflow: hidden; 
-            background-color: var(--bg-body);
-            background-image: var(--bg-gradient);
-            overscroll-behavior: none; touch-action: none; 
-            position: fixed; width: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+            touch-action: none;
+            position: fixed;
+            width: 100%;
         }
 
         body {
             font-family: 'Segoe UI', Roboto, sans-serif;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            color: var(--text-main); transition: background 0.4s ease;
+            background-color: var(--body-solid-bg);
+            color: var(--text-main);
+            transition: background-color 0.5s ease, color 0.3s ease;
         }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--body-bg);
+            z-index: -2;
+            pointer-events: none;
+            transition: background 0.6s ease;
+        }
+
+        /* =============================================
+           GLOW SPHERES
+        ============================================= */
+        .glow-sphere-1 {
+            position: fixed; top: -15%; left: -15%;
+            width: 70vw; height: 70vw;
+            background: radial-gradient(circle, var(--glow-1) 0%, rgba(25,135,84,.4) 35%, transparent 70%);
+            opacity: .38; z-index: -1; pointer-events: none; transition: all .6s ease;
+        }
+        .glow-sphere-2 {
+            position: fixed; bottom: -15%; right: -15%;
+            width: 65vw; height: 65vw;
+            background: radial-gradient(circle, var(--glow-2) 0%, rgba(212,175,55,.3) 35%, transparent 70%);
+            opacity: .32; z-index: -1; pointer-events: none; transition: all .6s ease;
+        }
+        .glow-sphere-3 {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 55vw; height: 55vw;
+            background: radial-gradient(circle, var(--glow-3) 0%, rgba(14,165,106,.25) 40%, transparent 70%);
+            opacity: .18; z-index: -1; pointer-events: none; transition: all .6s ease;
+        }
+
+        /* =============================================
+           GLASS PANEL
+        ============================================= */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(28px) saturate(1.8);
+            -webkit-backdrop-filter: blur(28px) saturate(1.8);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: all .35s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-panel::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+            pointer-events: none;
+        }
+
+        /* =============================================
+           MAIN APP LAYOUT
+        ============================================= */
         .main-app {
-            width: 100%; max-width: 400px;
-            padding: 0 20px; box-sizing: border-box; text-align: center;
-            display: flex; flex-direction: column; height: 100%;
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 0 16px 90px;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
             justify-content: center;
-        }
-        .header-container {
-            display: flex; align-items: center; justify-content: center;
-            gap: 15px; margin-bottom: 10px; margin-top: 5px; 
+            overflow: hidden;
         }
 
-        .header-container img { width: var(--logo-size); height: var(--logo-size); object-fit: contain; }
-
-        .header-container h3 {
-            margin: 0; font-size: var(--header-font-size);
-            line-height: 1.1; color: var(--text-main); font-weight: 800;
+        /* =============================================
+           SELECT KETERANGAN
+        ============================================= */
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
         }
 
-        .datetime-display {
-            margin-bottom: 10px; font-weight: bold; font-size: 14px;
-            color: var(--text-main); letter-spacing: 0.5px;
-            text-transform: uppercase;
+        select#keterangan {
+            flex-grow: 1;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--text-main);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 16px;
+            height: 52px;
+            padding: 0 16px;
+            font-weight: 700;
+            font-size: 15px;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            box-shadow: var(--glass-shadow);
+            transition: all .3s ease;
+        }
+        select#keterangan:focus {
+            border-color: var(--input-focus-border);
+            background: var(--input-focus-bg);
+        }
+        select#keterangan option {
+            background: #111;
+            color: #fff;
         }
 
-        .controls-row { display: flex; gap: 10px; margin-bottom: 15px; }
-
-        select, .btn-settings {
-            background: var(--bg-card); color: var(--text-main);
-            border: 2px solid var(--primary); border-radius: 15px; height: 50px;
-        }
-
-        select { flex-grow: 1; padding: 0 15px; font-weight: bold; font-size: 16px; }
-        .btn-settings { width: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-
+        /* =============================================
+           SCANNER BOX
+        ============================================= */
         .scanner-box {
-            width: 100%; background: #000; padding: 0;
-            border-radius: 20px; border: 4px solid var(--primary); position: relative;
-            box-sizing: border-box; overflow: hidden;
-            min-height: 450px; display: flex; align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0;
+            border-radius: 24px;
+            border: 2px solid var(--accent-icon);
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+            min-height: 420px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 0 32px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.06), inset 0 1px 0 rgba(255,255,255,.1);
         }
 
         #reader { width: 100%; height: 100%; }
-        #reader video { object-fit: cover !important; min-height: 450px; }
+        #reader video { object-fit: cover !important; min-height: 420px; }
 
+        /* Scanner corner markers */
+        .corner {
+            position: absolute;
+            width: 28px; height: 28px;
+            border: 4px solid var(--accent-icon);
+            z-index: 20;
+            filter: drop-shadow(0 0 6px var(--accent-icon));
+        }
+        .top-left { top: 80px; left: calc(50% - 130px); border-right: none; border-bottom: none; border-top-left-radius: 10px; }
+        .top-right { top: 80px; right: calc(50% - 130px); border-left: none; border-bottom: none; border-top-right-radius: 10px; }
+        .bottom-left { bottom: 80px; left: calc(50% - 130px); border-right: none; border-top: none; border-bottom-left-radius: 10px; }
+        .bottom-right { bottom: 80px; right: calc(50% - 130px); border-left: none; border-top: none; border-bottom-right-radius: 10px; }
+
+        @keyframes scanAnim {
+            0%   { top: 80px; opacity: 0.2; }
+            50%  { top: 340px; opacity: 1; }
+            100% { top: 80px; opacity: 0.2; }
+        }
+        .scan-line {
+            width: 260px; height: 2px;
+            background: var(--accent-icon);
+            position: absolute; left: 50%; transform: translateX(-50%);
+            z-index: 15;
+            animation: scanAnim 3s infinite ease-in-out;
+            box-shadow: 0 0 16px var(--accent-icon), 0 0 4px rgba(255,255,255,.5);
+        }
+
+        /* Barcode multi-select overlay */
         #selection-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 100; display: none;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 100; display: none;
             flex-direction: column; align-items: center; justify-content: center; gap: 10px;
             padding: 20px; box-sizing: border-box;
         }
 
         .barcode-option {
-            background: var(--primary); color: white; padding: 15px;
-            border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer;
-            border: 2px solid white; text-align: center; font-size: 14px;
+            background: var(--btn-primary-bg);
+            color: white; padding: 14px;
+            border-radius: 14px; font-weight: bold; width: 100%; cursor: pointer;
+            border: 1.5px solid rgba(255,255,255,.25);
+            text-align: center; font-size: 14px;
+            box-shadow: var(--btn-glow), 0 4px 12px var(--btn-shadow);
+            transition: all .2s ease;
         }
 
-        .corner {
-            position: absolute; width: 30px; height: 30px;
-            border: 5px solid var(--primary); z-index: 20;
-        }
-        .top-left { top: 85px; left: calc(50% - 140px); border-right: none; border-bottom: none; border-top-left-radius: 10px; }
-        .top-right { top: 85px; right: calc(50% - 140px); border-left: none; border-bottom: none; border-top-right-radius: 10px; }
-        .bottom-left { bottom: 85px; left: calc(50% - 140px); border-right: none; border-top: none; border-bottom-left-radius: 10px; }
-        .bottom-right { bottom: 85px; right: calc(50% - 140px); border-left: none; border-top: none; border-bottom-right-radius: 10px; }
-
-        @keyframes scanAnim {
-            0% { top: 85px; opacity: 0.2; }
-            50% { top: 365px; opacity: 1; }
-            100% { top: 85px; opacity: 0.2; }
-        }
-        .scan-line {
-            width: 280px; height: 3px; background: var(--primary);
-            position: absolute; left: 50%; transform: translateX(-50%);
-            z-index: 15; animation: scanAnim 3s infinite ease-in-out;
-            box-shadow: 0 0 20px var(--primary);
-        }
-
-        .last-scan-container { margin-top: 15px; width: 100%; }
+        /* =============================================
+           LAST SCAN DISPLAY
+        ============================================= */
+        .last-scan-container { margin-top: 12px; width: 100%; }
 
         #last-name-display {
-            width: 100%; height: 55px; background: var(--bg-card);
-            border: 2px solid var(--primary); border-radius: 15px;
-            color: var(--primary); text-align: center; font-weight: 800;
-            font-size: 20px; box-sizing: border-box; outline: none;
+            width: 100%; height: 52px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--accent-icon);
+            text-align: center;
+            font-weight: 800;
+            font-size: 18px;
+            box-sizing: border-box;
+            outline: none;
+            box-shadow: var(--glass-shadow);
+            transition: all .3s ease;
         }
 
-        #settings-modal, #about-pop-up {
-            display: none; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); background: var(--bg-card);
-            padding: 15px; border-radius: 20px; border: 2px solid var(--primary);
-            z-index: 10000; width: 88%; max-width: 340px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            max-height: 85vh; overflow-y: auto; color: var(--text-main);
-        }
-
-        #about-pop-up { z-index: 10002; text-align: center; }
-
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; border-bottom: 1px solid var(--primary); padding-bottom: 8px;
-        }
-        
-        .modal-header span, #about-pop-up h3 { color: var(--text-main) !important; }
-
-        .btn-close-modal { background: none; border: none; color: var(--text-main); font-size: 24px; font-weight: bold; cursor: pointer; }
-        
-        .setting-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-top: 8px; gap: 8px; font-size: 13px; color: var(--text-main);
-        }
-        
-        input[type="range"] { height: 4px; flex-grow: 1; }
-        input[type="color"] { border: none; width: 30px; height: 25px; background: none; cursor: pointer; }
-
-        .btn-save { width: 100%; padding: 12px; background: var(--primary); color: white; font-weight: bold; border: none; border-radius: 10px; margin-top: 15px; cursor: pointer; }
-
-        .btn-database-trigger {
-            margin-top: 15px; padding: 10px; border: 1.5px solid var(--primary); border-radius: 10px; 
-            cursor: pointer; font-size: 12px; font-weight: 800; color: white; background: var(--primary);
-            text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; box-sizing: border-box; text-decoration: none;
-        }
-
-        .btn-about-trigger {
-            margin-top: 8px; padding: 8px; border: 1px solid var(--primary);
-            border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold;
-            color: var(--primary); background: rgba(46, 204, 113, 0.05);
-            text-align: center; display: block;
-        }
-
+        /* =============================================
+           STATUS TOAST
+        ============================================= */
         #status-kirim {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            width: 85%; padding: 18px 15px; border-radius: 15px;
-            z-index: 30000; display: none; background-color: var(--primary);
-            color: white; border: 2px solid white; text-align: center; 
+            width: 85%; padding: 16px 15px; border-radius: 18px;
+            z-index: 30000; display: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1.5px solid var(--glass-border);
+            color: var(--text-main);
+            text-align: center;
             font-weight: 800; font-size: 13px; line-height: 1.4;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.2);
             white-space: pre-line;
         }
-        
-        .overlay-about {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 10001;
+
+        /* =============================================
+           NAV DOCK BAWAH — 4 IKON
+        ============================================= */
+        .custom-bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            width: 100%; height: 78px;
+            z-index: 40;
+            background: var(--nav-dock-bg);
+            backdrop-filter: blur(28px) saturate(1.8);
+            -webkit-backdrop-filter: blur(28px) saturate(1.8);
+            border-top: 1px solid var(--nav-dock-border);
+            border-radius: 28px 28px 0 0;
+            box-shadow: 0 -12px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.07);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 1rem;
         }
 
-        #gradient-controls {
-            display: none; border-top: 1px dashed rgba(46, 204, 113, 0.3);
-            margin-top: 8px; padding-top: 5px;
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 70px; height: 100%;
+            cursor: pointer;
+            transition: all .4s cubic-bezier(.175,.885,.32,1.275);
         }
 
-        .section-title { font-size: 10px; font-weight: bold; color: var(--primary); opacity: 0.7; margin-top: 10px; text-transform: uppercase; }
+        .icon-circle {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--icon-circle-pasif);
+            border: 1px solid rgba(255,255,255,.15);
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,.75);
+            font-size: 20px;
+            transition: all .4s cubic-bezier(.175,.885,.32,1.275);
+            z-index: 2;
+        }
 
-        #keterangan option[disabled] { display: none; }
+        .nav-text {
+            position: absolute;
+            bottom: -22px;
+            font-size: 9px; font-weight: 700;
+            letter-spacing: .03em;
+            color: var(--text-main);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all .4s cubic-bezier(.175,.885,.32,1.275);
+            white-space: nowrap;
+            z-index: 1;
+        }
 
-        /* ANIMASI ELLIPSIS UNTUK TOMBOL (5 TITIK) */
+        /* KLIK 1: ready */
+        .nav-item.ready { transform: translateY(-28px); }
+        .nav-item.ready .icon-circle {
+            background: var(--icon-circle-ready);
+            border-color: var(--icon-circle-ready-border);
+            box-shadow: var(--icon-circle-ready-shadow);
+            transform: scale(1.05);
+        }
+        .nav-item.ready .nav-text { opacity: 1; transform: translateY(0); }
+
+        /* KLIK 2: active */
+        .nav-item.active { transform: translateY(-32px); }
+        .nav-item.active .icon-circle {
+            background: var(--icon-circle-aktif);
+            color: var(--icon-text-aktif);
+            box-shadow: 0 8px 20px rgba(255,255,255,.25), 0 0 0 4px rgba(255,255,255,.1);
+            transform: scale(1.1);
+        }
+        .nav-item.active .nav-text {
+            opacity: 1;
+            transform: translateY(0);
+            color: var(--accent-icon);
+        }
+
+        /* =============================================
+           OFFLINE BADGE
+        ============================================= */
+        .badge-antrean {
+            position: absolute;
+            top: -2px; right: -2px;
+            min-width: 18px; height: 18px;
+            background: #f39c12;
+            color: white;
+            border-radius: 9px;
+            font-size: 10px;
+            font-weight: 900;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid rgba(0,0,0,.3);
+            z-index: 3;
+        }
+        .badge-antrean.visible { display: flex; }
+
+        /* =============================================
+           MODALS — GLASS STYLE
+        ============================================= */
+        .modal-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px) saturate(1.9);
+            -webkit-backdrop-filter: blur(32px) saturate(1.9);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 20px;
+            width: 92%;
+            max-width: 360px;
+            max-height: 88vh;
+            overflow-y: auto;
+            color: var(--text-main);
+            box-shadow: 0 24px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.2);
+            position: relative;
+        }
+        .modal-box::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-title .icon-badge {
+            width: 32px; height: 32px;
+            border-radius: 10px;
+            background: var(--badge-bg);
+            border: 1px solid var(--badge-border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+        }
+
+        .btn-close-modal {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.12);
+            color: var(--text-main);
+            font-size: 18px;
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .2s ease;
+        }
+        .btn-close-modal:hover { background: rgba(255,255,255,.15); }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent-icon);
+            opacity: 0.8;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-main);
+        }
+
+        input[type="range"] { height: 4px; flex-grow: 1; accent-color: var(--accent-icon); }
+        input[type="color"] { border: none; width: 30px; height: 26px; background: none; cursor: pointer; border-radius: 6px; }
+
+        select.modal-select {
+            background: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            height: 30px;
+            font-size: 12px;
+            padding: 0 8px;
+            outline: none;
+        }
+        select.modal-select option { background: #111; }
+
+        .btn-primary {
+            width: 100%;
+            padding: 13px;
+            background: var(--btn-primary-bg);
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
+            border: none;
+            border-radius: 14px;
+            margin-top: 14px;
+            cursor: pointer;
+            box-shadow: var(--btn-glow), 0 4px 14px var(--btn-shadow);
+            transition: all .3s ease;
+            letter-spacing: .03em;
+        }
+        .btn-primary:hover { background: var(--btn-primary-hover); transform: translateY(-2px); }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 11px;
+            background: rgba(255,255,255,.07);
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 12px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,.12); }
+
+        /* Rekap link */
+        .btn-rekap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 14px;
+            background: var(--btn-primary-bg);
+            color: white;
+            font-weight: 800;
+            font-size: 12px;
+            text-decoration: none;
+            margin-top: 10px;
+            box-shadow: var(--btn-glow), 0 4px 14px var(--btn-shadow);
+            border: 1px solid rgba(255,255,255,.18);
+            transition: all .3s ease;
+        }
+
+        /* =============================================
+           TEMA SWATCH BUTTONS
+        ============================================= */
+        .tema-btn-swatch {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 12px;
+            text-align: left;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all .2s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,.15);
+            margin-bottom: 8px;
+        }
+        .tema-btn-swatch:hover { transform: translateX(3px); filter: brightness(1.12); }
+        .swatch-dots { display: flex; gap: 4px; }
+        .swatch-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,.35);
+            flex-shrink: 0;
+        }
+
+        /* =============================================
+           ANTREAN MODAL
+        ============================================= */
+        #modal-antrean {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 20000;
+            justify-content: center; align-items: center;
+        }
+        .modal-content-antrean {
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px) saturate(1.9);
+            -webkit-backdrop-filter: blur(32px) saturate(1.9);
+            border: 1.5px solid var(--glass-border);
+            box-shadow: 0 24px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.18);
+            width: 92%; max-width: 360px;
+            border-radius: 28px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: var(--text-main);
+        }
+        .progress-container {
+            width: 100%;
+            background: rgba(255,255,255,.08);
+            border-radius: 10px;
+            height: 8px;
+            margin: 14px 0;
+            display: none;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--btn-primary-bg);
+            width: 0%;
+            transition: width 0.3s;
+            box-shadow: var(--btn-glow);
+        }
+        #loading-text {
+            font-size: 12px;
+            color: var(--accent-icon);
+            text-align: center;
+            margin-bottom: 5px;
+            display: none;
+            font-weight: bold;
+        }
+
+        /* =============================================
+           LOADING DOTS ANIMATION
+        ============================================= */
         .loading-dots::after {
             display: inline-block;
             animation: ellipsis 2s infinite;
             content: ".";
-            width: 2.5em; /* Lebih lebar untuk menampung 5 titik */
+            width: 2.5em;
             text-align: left;
         }
         @keyframes ellipsis {
-            0% { content: "."; }
-            20% { content: ".."; }
-            40% { content: "..."; }
-            60% { content: "...."; }
-            80% { content: "....."; }
+            0%   { content: "."; }
+            20%  { content: ".."; }
+            40%  { content: "..."; }
+            60%  { content: "...."; }
+            80%  { content: "....."; }
             100% { content: "."; }
         }
 
-        .btn-antrean-float {
-            position: fixed; 
-            bottom: 85px; 
-            right: 15px; 
-            background: rgba(243, 156, 18, 0.2); 
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #f39c12; 
-            border: 1.5px solid #f39c12; 
-            padding: 8px 15px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            z-index: 99;
-            font-weight: 800; 
-            font-size: 11px; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            gap: 2px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            transition: all 0.3s ease;
+        /* =============================================
+           PWA POPUP
+        ============================================= */
+        #pwa-popup {
+            display: none;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
         }
-        
-        .btn-antrean-float.ada-data {
-            background: #f39c12;
-            color: white;
-            box-shadow: 0 0 15px rgba(243, 156, 18, 0.5);
-            border: 1.5px solid white;
+        .pwa-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 28px;
+            width: 88%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 24px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.18);
         }
 
-        #label-jumlah-antrean { font-size: 14px; }
+        /* =============================================
+           SCROLLBAR
+        ============================================= */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,.15); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 99px; }
 
-        #modal-antrean {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.85); z-index: 20000; justify-content: center; align-items: center;
+        /* Fullscreen hint */
+        #fullscreen-info {
+            font-size: 11px;
+            opacity: 0.4;
+            margin-top: 8px;
+            color: var(--text-muted);
         }
-        .modal-content-antrean {
-            background: var(--bg-card); width: 90%; max-width: 360px; border-radius: 20px; 
-            padding: 20px; max-height: 80vh; overflow-y: auto; border: 2px solid var(--primary);
+
+        /* Overlay about backdrop */
+        #about-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 10001;
+        }
+
+        /* About popup */
+        #about-pop-up {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px) saturate(1.9);
+            -webkit-backdrop-filter: blur(32px) saturate(1.9);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 22px;
+            width: 90%;
+            max-width: 340px;
+            z-index: 10002;
+            text-align: center;
             color: var(--text-main);
+            box-shadow: 0 24px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.18);
+            max-height: 85vh;
+            overflow-y: auto;
         }
-        .progress-container {
-            width: 100%; background: rgba(255,255,255,0.1); border-radius: 10px; 
-            height: 10px; margin: 15px 0; display: none; overflow: hidden;
+
+        /* Settings modal */
+        #settings-modal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(32px) saturate(1.9);
+            -webkit-backdrop-filter: blur(32px) saturate(1.9);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 18px;
+            width: 90%;
+            max-width: 340px;
+            z-index: 10000;
+            color: var(--text-main);
+            box-shadow: 0 24px 80px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.18);
+            max-height: 85vh;
+            overflow-y: auto;
         }
-        .progress-bar {
-            height: 100%; background: var(--primary); width: 0%; transition: width 0.3s;
-        }
-        #loading-text { font-size: 12px; color: var(--primary); text-align: center; margin-bottom: 5px; display: none; font-weight: bold; }
     </style>
 </head>
-<body data-theme="dark" onclick="toggleFullscreen()"> 
+<body onclick="toggleFullscreen()">
+
+    <!-- GLOW SPHERES -->
+    <div class="glow-sphere-1"></div>
+    <div class="glow-sphere-2"></div>
+    <div class="glow-sphere-3"></div>
+
+    <!-- STATUS TOAST -->
     <div id="status-kirim"></div>
-    <div id="about-overlay" class="overlay-about" onclick="closeAbout()"></div>
 
-    <button id="btn-float-offline" class="btn-antrean-float" onclick="bukaModalAntrean(event)">
-        <span>OFFLINE</span>
-        <span id="label-jumlah-antrean">0</span>
-    </button>
+    <!-- ABOUT OVERLAY -->
+    <div id="about-overlay" onclick="closeAbout()"></div>
 
-    <div id="modal-antrean">
-        <div class="modal-content-antrean" onclick="event.stopPropagation()">
-            <h3 style="margin-top:0; color:var(--primary); text-align:center;">ANTREAN OFFLINE</h3>
-            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:15px 0;">
-            
-            <div id="loading-text">MENGIRIM: <span id="current-send">0</span> / <span id="total-send">0</span></div>
-            <div class="progress-container" id="prog-cont"><div class="progress-bar" id="prog-bar"></div></div>
+    <!-- =======================================
+         KONTEN UTAMA
+    ======================================= -->
+    <div class="main-app">
 
-            <div id="daftar-item-antrean" style="margin-bottom:20px; max-height:300px; overflow-y:auto;">
-            </div>
-            <div style="display:flex; gap:10px;">
-                <button onclick="kirimManual()" id="btn-kirim-manual" style="flex:1; background:var(--primary); color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">
-                    <span id="text-btn-kirim">KIRIM</span>
-                </button>
-                <button onclick="tutupModalAntrean()" id="btn-tutup-antrean" style="flex:1; background:#7f8c8d; color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">TUTUP</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-app">  
-        <div class="header-container">
-            <img src="logo-smp-azzahro.png" alt="SMP">
-            <h3 id="text-header">PRESENSI DIGITAL<br>SMP ISLAM AZ-ZAHRO<br>SMK AZ-ZAHRO</h3>
-            <img src="logo-smk-azzahro.png" alt="SMK">
-        </div>
-
-        <div class="datetime-display" id="clock-display">MEMUAT WAKTU...</div>
-
+        <!-- DROPDOWN KETERANGAN -->
         <div class="controls-row">
             <select id="keterangan">
-                <option value="" disabled selected>Pilih Keterangan</option>
+                <option value="" disabled selected>— Pilih Keterangan —</option>
                 <option value="●">🟢 HADIR</option>
                 <option value="I">🟡 IZIN</option>
                 <option value="S">🔵 SAKIT</option>
                 <option value="A">🔴 ALPA</option>
             </select>
-            <div class="btn-settings" onclick="toggleSettings()">⚙</div>
         </div>
 
+        <!-- KAMERA SCANNER -->
         <div class="scanner-box">
-            <div class="corner top-left"></div><div class="corner top-right"></div>
-            <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
             <div class="scan-line"></div>
             <div id="reader"></div>
             <div id="selection-overlay"></div>
         </div>
 
+        <!-- NAMA TERAKHIR SCAN -->
         <div class="last-scan-container">
-            <input type="text" id="last-name-display" placeholder="MENUNGGU SCAN..." readonly>
+            <input type="text" id="last-name-display" placeholder="⬆ MENUNGGU SCAN..." readonly>
         </div>
-        
-        <p id="fullscreen-info" style="font-size: 11px; opacity: 0.5; margin-top: 15px;">Ketuk layar untuk Fullscreen</p>
 
-        <div id="settings-modal">
+        <p id="fullscreen-info">Ketuk layar untuk Fullscreen</p>
+    </div>
+
+    <!-- =======================================
+         NAV DOCK BAWAH — 4 IKON
+    ======================================= -->
+    <nav class="custom-bottom-nav">
+        <!-- 1. Rekap -->
+        <div class="nav-item" onclick="navKlikAksi(this,'rekap')">
+            <div class="icon-circle">📊</div>
+            <span class="nav-text">Rekapitulasi</span>
+        </div>
+        <!-- 2. Pilih Tema -->
+        <div class="nav-item" onclick="navKlikAksi(this,'tema')">
+            <div class="icon-circle">🎨</div>
+            <span class="nav-text">Pilih Tema</span>
+        </div>
+        <!-- 3. Data Offline -->
+        <div class="nav-item" id="nav-offline-btn" onclick="navKlikAksi(this,'offline')">
+            <div class="icon-circle" style="position:relative;">
+                ☁️
+                <div class="badge-antrean" id="badge-antrean-nav">0</div>
+            </div>
+            <span class="nav-text">Data Offline</span>
+        </div>
+        <!-- 4. Pengaturan -->
+        <div class="nav-item" onclick="navKlikAksi(this,'pengaturan')">
+            <div class="icon-circle">⚙️</div>
+            <span class="nav-text">Pengaturan</span>
+        </div>
+    </nav>
+
+    <!-- =======================================
+         MODAL: ANTREAN OFFLINE
+    ======================================= -->
+    <div id="modal-antrean">
+        <div class="modal-content-antrean" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <span style="font-weight: bold; font-size: 16px;">Pengaturan</span>
-                <button class="btn-close-modal" onclick="cancelSettings()">×</button>
-            </div>
-            <div class="section-title">Umum & Suara</div>
-            <div class="setting-item">
-                <span>Notifikasi</span>
-                <select id="sound-choice" style="height: 28px; font-size: 12px; width: 60%; color: #f3f6f4;">
-                    <option value="notification/Notif01.mp3" selected>Default</option>
-                    <option value="notification/Notif02.mp3">Notifikasi 01</option>
-                    <option value="notification/Notif03.mp3">Notifikasi 02</option>
-                    <option value="notification/apple-success.mp3">Notifikasi Success Apple</option>
-                    <option value="notification/success.mp3">Success</option>
-                    <option value="notification/Done.mp3">Done</option>
-                    <option value="notification/Notif-ML.mp3">Notifikasi ML</option>
-                    <option value="notification/Mission-success.mp3">Mission Success</option>
-                    <option value="notification/Success-fanfare-trumpets.mp3">Success Fanfare</option>
-                    <option value="notification/floraphonic-cute-animal-squeak-1.mp3">floraphonic-cute-animal-squeak-1</option>
-                    <option value="notification/floraphonic-cute-animal-squeak-2.mp3">floraphonic-cute-animal-squeak-2</option>
-                    <option value="notification/Yayyy.mp3">Yayyy...!!</option>
-                    <option value="notification/kiw-kiw-cukurukuk-small-child.mp3">Kiw-kiw-cukurukuk-small-child</option>
-                    <option value="notification/kiw-kiw-original.mp3">kiw-kiw-original</option>
-                </select>
-            </div>
-            <div class="section-title">Tampilan Visual</div>
-            <div class="setting-item"><span>Logo</span><input type="range" id="range-logo" min="40" max="110" oninput="previewLayout()"></div>
-            <div class="setting-item"><span>Font</span><input type="range" id="range-font" min="0.5" max="1.5" step="0.05" oninput="previewLayout()"></div>
-            <div class="setting-item">
-                <span>Teks</span><input type="color" id="color-text" oninput="previewLayout()">
-                <span>Garis</span><input type="color" id="color-picker" oninput="previewLayout()">
-                <span>Latar</span><input type="color" id="color-bg" oninput="previewLayout()">
-            </div>
-            <div class="setting-item" style="border: 1px solid var(--primary); padding: 5px; border-radius: 5px;">
-                <span style="font-weight: bold;">Gunakan Gradien</span>
-                <input type="checkbox" id="gradient-toggle" onchange="previewLayout()">
-            </div>
-            <div id="gradient-controls">
-                <div class="setting-item">
-                    <span>Atas</span><input type="color" id="grad-1" oninput="previewLayout()">
-                    <span>Tengah</span><input type="color" id="grad-2" oninput="previewLayout()">
-                    <span>Bawah</span><input type="color" id="grad-3" oninput="previewLayout()">
+                <div class="modal-title">
+                    <div class="icon-badge">☁️</div>
+                    ANTREAN OFFLINE
                 </div>
-                <div class="setting-item">
-                    <span>Arah</span>
-                    <select id="grad-dir" onchange="previewLayout()" style="height: 25px; font-size: 11px; width: 100px; color: #f3f6f4;">
-                        <option value="180deg">Vertikal</option>
-                        <option value="90deg">Horizontal</option>
-                        <option value="45deg">Diagonal</option>
-                    </select>
-                </div>
+                <button class="btn-close-modal" onclick="tutupModalAntrean()">×</button>
             </div>
-            <div class="setting-item"><span>Mode Terang</span><input type="checkbox" id="theme-toggle" onchange="previewLayout()"></div>
-            <a href="https://azzahrolocare.github.io/rekapitulasi-presensi-siswa/" target="_blank" class="btn-database-trigger" id="btn-rekap">REKAPITULASI PRESENSI SISWA</a>
-            <div class="btn-about-trigger" onclick="showAbout()">ⓘ Tentang Aplikasi</div>
-            <button class="btn-save" onclick="saveSettings()">SIMPAN</button>
-        </div>
-
-        <div id="about-pop-up">
-            <h3 style="margin-top:0; font-size: 18px;">Tentang Aplikasi</h3>
-            <p style="font-size:12px; line-height:1.6; text-align: left; opacity: 0.9;">"Aplikasi Presensi Digital SMP Islam & SMK Az-Zahro hadir sebagai solusi inovatif dalam mendukung digitalisasi pendidikan serta efisiensi administrasi sekolah.<br><br>Dengan fokus mentransformasi presensi konvensional menjadi sistem otomatis berbasis QR Code, aplikasi ini memastikan pendataan kehadiran berjalan cepat dan akurat.<br><br>Melalui integrasi langsung dengan cloud storage, seluruh data tersinkronisasi secara otomatis tanpa perlu rekapitulasi manual di akhir hari."</p>
-            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; font-size:11px; text-align:left; border-left: 3px solid var(--primary);">
-                <div style="text-align: center; font-size:13px; font-weight: bold; color: var(--primary);">IT DIGITALIZATION</div>
-                <div style="text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 15px; font-size: 10px; color: var(--text-main);">SMP ISLAM AZ-ZAHRO & SMK AZ-ZAHRO</div>
-                <p style="margin: 5px 0;"><strong>Created by ops:</strong> Rahmattullah</p>
-                <p style="margin: 5px 0;"><strong>Email:</strong> mas.rahmat.id@gmail.com</p>
+            <div id="loading-text">MENGIRIM: <span id="current-send">0</span> / <span id="total-send">0</span></div>
+            <div class="progress-container" id="prog-cont">
+                <div class="progress-bar" id="prog-bar"></div>
             </div>
-            <button class="btn-save" style="margin-top:15px; padding:10px;" onclick="closeAbout()">TUTUP</button>
+            <div id="daftar-item-antrean" style="margin-bottom:16px; max-height:260px; overflow-y:auto;"></div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="kirimManual()" id="btn-kirim-manual" style="flex:1; background:var(--btn-primary-bg); color:white; border:none; padding:12px; border-radius:12px; font-weight:bold; cursor:pointer; box-shadow:var(--btn-glow); font-size:13px;">
+                    <span id="text-btn-kirim">KIRIM</span>
+                </button>
+                <button onclick="tutupModalAntrean()" id="btn-tutup-antrean" style="flex:1; background:rgba(255,255,255,.08); color:var(--text-main); border:1px solid var(--glass-border); padding:12px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:13px;">TUTUP</button>
+            </div>
         </div>
     </div>
 
-    <div id="pwa-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
-    <div style="background: var(--bg-card); width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; border: 2px solid var(--primary); text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-        <img src="icon-apk-presensi-azzahro.png" style="width: 80px; height: 80px; margin-bottom: 15px; border-radius: 15px;">
-        <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-main);">Instal Aplikasi</h3>
-        <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 20px;">Pasang Aplikasi Presensi Digital Az-Zahro di layar utama Anda untuk akses lebih cepat.</p>
-        
-        <div style="display: flex; gap: 10px;">
-            <button id="btnBatal" style="flex: 1; background: transparent; color: #999; border: 1px solid #444; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">Nanti</button>
-            <button id="btnInstalPop" style="flex: 1; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer;">Instal</button>
+    <!-- =======================================
+         MODAL: PILIH TEMA
+    ======================================= -->
+    <div class="modal-overlay" id="modal-tema" onclick="tutupModalTema()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div class="icon-badge">🎨</div>
+                    Pilih Tema
+                </div>
+                <button class="btn-close-modal" onclick="tutupModalTema()">×</button>
+            </div>
+            <p style="font-size:11px; color:var(--text-muted); margin:0 0 12px; text-align:center;">6 Tema Tersedia</p>
+            <div>
+                <button class="tema-btn-swatch" style="background:linear-gradient(135deg,#09331f,#1a7a4a,#0d5a36);border-color:rgba(25,135,84,.4)" onclick="pilihSistemTema('emerald');tutupModalTema()">
+                    <span>🌿 Emerald Forest</span>
+                    <div class="swatch-dots"><div class="swatch-dot" style="background:#09331f"></div><div class="swatch-dot" style="background:#198754"></div><div class="swatch-dot" style="background:#1a7a4a"></div><div class="swatch-dot" style="background:#D4AF37"></div><div class="swatch-dot" style="background:#0ea56a"></div></div>
+                </button>
+                <button class="tema-btn-swatch" style="background:linear-gradient(135deg,#0b0f19,#1e1b4b,#312e81);border-color:rgba(99,102,241,.4)" onclick="pilihSistemTema('biru-ungu');tutupModalTema()">
+                    <span>🔮 Blue Violet</span>
+                    <div class="swatch-dots"><div class="swatch-dot" style="background:#0b0f19"></div><div class="swatch-dot" style="background:#1e1b4b"></div><div class="swatch-dot" style="background:#4f46e5"></div><div class="swatch-dot" style="background:#7c3aed"></div><div class="swatch-dot" style="background:#818cf8"></div></div>
+                </button>
+                <button class="tema-btn-swatch" style="background:linear-gradient(135deg,#0c1a3a,#1a3a6b,#2f7dff);border-color:rgba(47,125,255,.45)" onclick="pilihSistemTema('electric-blue');tutupModalTema()">
+                    <span>⚡ Electric Blue</span>
+                    <div class="swatch-dots"><div class="swatch-dot" style="background:#0c1a3a"></div><div class="swatch-dot" style="background:#1a3a6b"></div><div class="swatch-dot" style="background:#2f7dff"></div><div class="swatch-dot" style="background:#00c6ff"></div><div class="swatch-dot" style="background:#cb3dff"></div></div>
+                </button>
+                <button class="tema-btn-swatch" style="background:linear-gradient(135deg,#1a0f05,#3a1c05,#7c2d00);border-color:rgba(234,88,12,.4)" onclick="pilihSistemTema('sunset-orange');tutupModalTema()">
+                    <span>🌅 Sunset Orange</span>
+                    <div class="swatch-dots"><div class="swatch-dot" style="background:#1a0f05"></div><div class="swatch-dot" style="background:#7c2d00"></div><div class="swatch-dot" style="background:#ea580c"></div><div class="swatch-dot" style="background:#eab308"></div><div class="swatch-dot" style="background:#f97316"></div></div>
+                </button>
+                <button class="tema-btn-swatch" style="background:linear-gradient(135deg,#1a0520,#3d0f50,#7e1f75);border-color:rgba(219,39,119,.4)" onclick="pilihSistemTema('rose-galaxy');tutupModalTema()">
+                    <span>🌸 Rose Galaxy</span>
+                    <div class="swatch-dots"><div class="swatch-dot" style="background:#1a0520"></div><div class="swatch-dot" style="background:#3d0f50"></div><div class="swatch-dot" style="background:#9333ea"></div><div class="swatch-dot" style="background:#ec4899"></div><div class="swatch-dot" style="background:#f472b6"></div></div>
+                </button>
+                <button class="tema-btn-swatch" style="background:linear-gradient(135deg,#032028,#084255,#0e7490);border-color:rgba(6,182,212,.4)" onclick="pilihSistemTema('ocean-teal');tutupModalTema()">
+                    <span>🌊 Ocean Teal</span>
+                    <div class="swatch-dots"><div class="swatch-dot" style="background:#032028"></div><div class="swatch-dot" style="background:#084255"></div><div class="swatch-dot" style="background:#0e7490"></div><div class="swatch-dot" style="background:#06b6d4"></div><div class="swatch-dot" style="background:#22d3ee"></div></div>
+                </button>
+            </div>
         </div>
     </div>
-</div>
- 
+
+    <!-- =======================================
+         MODAL: PENGATURAN
+    ======================================= -->
+    <div id="settings-modal">
+        <div class="modal-header">
+            <div class="modal-title">
+                <div class="icon-badge">⚙️</div>
+                Pengaturan
+            </div>
+            <button class="btn-close-modal" onclick="cancelSettings()">×</button>
+        </div>
+
+        <div class="section-label">Notifikasi Suara</div>
+        <div class="setting-item">
+            <span>Suara</span>
+            <select id="sound-choice" class="modal-select" style="width:62%;">
+                <option value="notification/Notif01.mp3" selected>Default</option>
+                <option value="notification/Notif02.mp3">Notifikasi 01</option>
+                <option value="notification/Notif03.mp3">Notifikasi 02</option>
+                <option value="notification/apple-success.mp3">Apple Success</option>
+                <option value="notification/success.mp3">Success</option>
+                <option value="notification/Done.mp3">Done</option>
+                <option value="notification/Notif-ML.mp3">Notif ML</option>
+                <option value="notification/Mission-success.mp3">Mission Success</option>
+                <option value="notification/Success-fanfare-trumpets.mp3">Fanfare</option>
+                <option value="notification/floraphonic-cute-animal-squeak-1.mp3">Cute Squeak 1</option>
+                <option value="notification/floraphonic-cute-animal-squeak-2.mp3">Cute Squeak 2</option>
+                <option value="notification/Yayyy.mp3">Yayyy!!</option>
+                <option value="notification/kiw-kiw-cukurukuk-small-child.mp3">Kiw-kiw</option>
+                <option value="notification/kiw-kiw-original.mp3">Kiw-kiw Original</option>
+            </select>
+        </div>
+
+        <div class="section-label">Ukuran Logo & Font Header</div>
+        <div class="setting-item"><span>Logo</span><input type="range" id="range-logo" min="40" max="110"></div>
+        <div class="setting-item"><span>Font</span><input type="range" id="range-font" min="0.5" max="1.5" step="0.05"></div>
+
+        <button class="btn-primary" onclick="saveSettings()">💾 SIMPAN PENGATURAN</button>
+    </div>
+
+    <!-- =======================================
+         MODAL: TENTANG APLIKASI
+    ======================================= -->
+    <div id="about-pop-up">
+        <div class="modal-header" style="margin-bottom:12px;">
+            <div class="modal-title" style="font-size:15px;">
+                <div class="icon-badge">ℹ️</div>
+                Tentang Aplikasi
+            </div>
+            <button class="btn-close-modal" onclick="closeAbout()">×</button>
+        </div>
+        <p style="font-size:12px; line-height:1.7; text-align:left; color:var(--text-muted); margin:0 0 12px;">
+            Aplikasi Presensi Digital SMP Islam & SMK Az-Zahro hadir sebagai solusi inovatif dalam mendukung digitalisasi pendidikan serta efisiensi administrasi sekolah.<br><br>
+            Dengan fokus mentransformasi presensi konvensional menjadi sistem otomatis berbasis QR Code, aplikasi ini memastikan pendataan kehadiran berjalan cepat dan akurat.<br><br>
+            Melalui integrasi langsung dengan cloud storage, seluruh data tersinkronisasi secara otomatis tanpa perlu rekapitulasi manual di akhir hari.
+        </p>
+        <div style="background:rgba(255,255,255,.06); padding:12px; border-radius:14px; font-size:11px; text-align:left; border-left: 3px solid var(--accent-icon); color:var(--text-muted);">
+            <div style="text-align:center; font-size:13px; font-weight:bold; color:var(--accent-icon);">IT DIGITALIZATION</div>
+            <div style="text-align:center; font-weight:bold; text-decoration:underline; margin-bottom:12px; font-size:10px; color:var(--text-main);">SMP ISLAM AZ-ZAHRO & SMK AZ-ZAHRO</div>
+            <p style="margin:4px 0;"><strong>Created by:</strong> Rahmattullah</p>
+            <p style="margin:4px 0;"><strong>Email:</strong> mas.rahmat.id@gmail.com</p>
+        </div>
+        <button class="btn-primary" style="margin-top:12px;" onclick="closeAbout()">TUTUP</button>
+    </div>
+
+    <!-- =======================================
+         PWA INSTALL POPUP
+    ======================================= -->
+    <div id="pwa-popup">
+        <div class="pwa-box">
+            <img src="icon-apk-presensi-azzahro.png" style="width:72px; height:72px; margin-bottom:14px; border-radius:18px; border:2px solid var(--glass-border);">
+            <h3 style="margin:0 0 8px; font-size:1rem; color:var(--text-main);">Instal Aplikasi</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:18px;">Pasang Aplikasi Presensi Digital Az-Zahro di layar utama Anda untuk akses lebih cepat.</p>
+            <div style="display:flex; gap:10px;">
+                <button id="btnBatal" style="flex:1; background:rgba(255,255,255,.08); color:var(--text-muted); border:1px solid var(--glass-border); padding:10px; border-radius:12px; font-weight:bold; cursor:pointer;">Nanti</button>
+                <button id="btnInstalPop" style="flex:1; background:var(--btn-primary-bg); color:white; border:none; padding:10px; border-radius:12px; font-weight:bold; cursor:pointer; box-shadow:var(--btn-glow);">Instal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =======================================
+         JAVASCRIPT
+    ======================================= -->
     <script>
+        /* =====================================
+           DATABASE INDEXEDDB
+        ===================================== */
         const dbName = "PresensiOfflineDB";
         let db;
         const requestDB = indexedDB.open(dbName, 1);
@@ -426,11 +993,23 @@
                 db.createObjectStore("antrean", { keyPath: "id", autoIncrement: true });
             }
         };
-        requestDB.onsuccess = (e) => { 
-            db = e.target.result; 
+        requestDB.onsuccess = (e) => {
+            db = e.target.result;
             updateJumlahAntreanBadge();
         };
 
+        /* =====================================
+           KONFIGURASI
+        ===================================== */
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwCXbDTuaFkN7GlcXJxaFgDaKPEp2G9vySF1IKfWxUCTuEOCYt39nMmlEmI25pz4PSd/exec';
+        const rawURL = '';
+        let isProcessing = false;
+        let detectedBarcodes = new Set();
+        let scanTimer = null;
+
+        /* =====================================
+           FULLSCREEN
+        ===================================== */
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => console.log(err));
@@ -438,121 +1017,119 @@
             }
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwCXbDTuaFkN7GlcXJxaFgDaKPEp2G9vySF1IKfWxUCTuEOCYt39nMmlEmI25pz4PSd/exec';
-        //Pemanggil file gambar dan audio 'URL'
-        const rawURL = '';
-       //------------------------------
-        let isProcessing = false;
-        let detectedBarcodes = new Set();
-        let scanTimer = null;
-
-        function updateClock() {
-            const now = new Date();
-            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            document.getElementById('clock-display').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} | ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`.toUpperCase();
+        /* =====================================
+           STATUS UI
+        ===================================== */
+        function updateStatusUI(pesan, warna) {
+            const s = document.getElementById('status-kirim');
+            s.innerText = pesan;
+            s.style.borderColor = warna;
+            s.style.display = "block";
+            setTimeout(() => {
+                s.style.display = "none";
+                isProcessing = false;
+                detectedBarcodes.clear();
+            }, 4000);
         }
-        setInterval(updateClock, 1000); updateClock();
 
+        /* =====================================
+           SETTINGS — APPLY / SAVE / CANCEL
+        ===================================== */
+        function applySettings() {
+            const config = JSON.parse(localStorage.getItem('absensiConfig')) || {
+                sound: 'notification/Notif01.mp3',
+                logoSize: '65',
+                fontSize: '0.9'
+            };
+            const sc = document.getElementById('sound-choice');
+            const rl = document.getElementById('range-logo');
+            const rf = document.getElementById('range-font');
+            if (sc) sc.value = config.sound;
+            if (rl) rl.value = config.logoSize;
+            if (rf) rf.value = config.fontSize;
+        }
+
+        function saveSettings() {
+            const config = {
+                sound: document.getElementById('sound-choice').value,
+                logoSize: document.getElementById('range-logo').value,
+                fontSize: document.getElementById('range-font').value
+            };
+            localStorage.setItem('absensiConfig', JSON.stringify(config));
+            new Audio(rawURL + config.sound).play().catch(() => {});
+            document.getElementById('settings-modal').style.display = 'none';
+            resetNavActiveState();
+        }
+
+        function cancelSettings() {
+            applySettings();
+            document.getElementById('settings-modal').style.display = 'none';
+            resetNavActiveState();
+        }
+
+        /* =====================================
+           ABOUT MODAL
+        ===================================== */
         function showAbout() {
             document.getElementById('about-pop-up').style.display = 'block';
             document.getElementById('about-overlay').style.display = 'block';
         }
-
         function closeAbout() {
             document.getElementById('about-pop-up').style.display = 'none';
             document.getElementById('about-overlay').style.display = 'none';
         }
 
-        function applySettings() {
-            const config = JSON.parse(localStorage.getItem('absensiConfig')) || {
-                sound: 'notification/Notif01.mp3', theme: 'dark', primary: '#2ecc71',
-                logoSize: '65', fontSize: '0.9', textColor: '#ffffff', bgColor: '#121212',
-                useGrad: false, g1: '#121212', g2: '#1e1e1e', g3: '#000000', gDir: '180deg'
-            };
-            document.getElementById('sound-choice').value = config.sound;
-            document.getElementById('color-picker').value = config.primary;
-            document.getElementById('range-logo').value = config.logoSize;
-            document.getElementById('range-font').value = config.fontSize;
-            document.getElementById('color-text').value = config.textColor;
-            document.getElementById('color-bg').value = config.bgColor;
-            document.getElementById('theme-toggle').checked = (config.theme === 'light');
-            document.getElementById('gradient-toggle').checked = config.useGrad;
-            document.getElementById('grad-1').value = config.g1;
-            document.getElementById('grad-2').value = config.g2;
-            document.getElementById('grad-3').value = config.g3;
-            document.getElementById('grad-dir').value = config.gDir;
-            previewLayout();
+        /* =====================================
+           NAV DOCK LOGIC
+        ===================================== */
+        function resetNavActiveState() {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('ready', 'active'));
         }
 
-        function previewLayout() {
-            const useGrad = document.getElementById('gradient-toggle').checked;
-            const primary = document.getElementById('color-picker').value;
-            const bgSolid = document.getElementById('color-bg').value;
-            const textColor = document.getElementById('color-text').value;
-            const gradSection = document.getElementById('gradient-controls');
+        function navKlikAksi(el, tipe) {
+            const sudahReady = el.classList.contains('ready');
+            const sudahActive = el.classList.contains('active');
 
-            document.documentElement.style.setProperty('--text-main', textColor);
-            document.documentElement.style.setProperty('--primary', primary);
-            document.documentElement.style.setProperty('--logo-size', document.getElementById('range-logo').value + 'px');
-            document.documentElement.style.setProperty('--header-font-size', document.getElementById('range-font').value + 'rem');
-            
-            if (useGrad) {
-                gradSection.style.display = 'block';
-                const g1 = document.getElementById('grad-1').value;
-                const g2 = document.getElementById('grad-2').value;
-                const g3 = document.getElementById('grad-3').value;
-                const gDir = document.getElementById('grad-dir').value;
-                document.documentElement.style.setProperty('--bg-gradient', `linear-gradient(${gDir}, ${g1} 0%, ${g2} 50%, ${g3} 100%)`);
-                document.getElementById('btn-rekap').style.background = `linear-gradient(45deg, ${primary}, ${g2})`;
+            document.querySelectorAll('.nav-item').forEach(i => {
+                if (i !== el) i.classList.remove('ready', 'active');
+            });
+
+            if (!sudahReady && !sudahActive) {
+                el.classList.add('ready');
+            } else if (sudahReady && !sudahActive) {
+                el.classList.remove('ready');
+                el.classList.add('active');
+                jalankanAksiNav(tipe);
             } else {
-                gradSection.style.display = 'none';
-                document.documentElement.style.setProperty('--bg-body', bgSolid);
-                document.documentElement.style.setProperty('--bg-gradient', 'none');
-                document.getElementById('btn-rekap').style.background = primary;
+                el.classList.remove('ready', 'active');
             }
-            document.body.setAttribute('data-theme', document.getElementById('theme-toggle').checked ? 'light' : 'dark');
         }
 
-        function toggleSettings() {
-            const m = document.getElementById('settings-modal');
-            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        function jalankanAksiNav(tipe) {
+            if (tipe === 'rekap') {
+                window.open('https://azzahrolocare.github.io/rekapitulasi-presensi-siswa/', '_blank');
+                setTimeout(resetNavActiveState, 600);
+            } else if (tipe === 'tema') {
+                document.getElementById('modal-tema').classList.add('open');
+            } else if (tipe === 'offline') {
+                bukaModalAntrean(null);
+            } else if (tipe === 'pengaturan') {
+                applySettings();
+                document.getElementById('settings-modal').style.display = 'block';
+            }
         }
 
-        function cancelSettings() { applySettings(); toggleSettings(); }
-
-        function saveSettings() {
-            const config = {
-                sound: document.getElementById('sound-choice').value,
-                theme: document.getElementById('theme-toggle').checked ? 'light' : 'dark',
-                primary: document.getElementById('color-picker').value,
-                logoSize: document.getElementById('range-logo').value,
-                fontSize: document.getElementById('range-font').value,
-                textColor: document.getElementById('color-text').value,
-                bgColor: document.getElementById('color-bg').value,
-                useGrad: document.getElementById('gradient-toggle').checked,
-                g1: document.getElementById('grad-1').value,
-                g2: document.getElementById('grad-2').value,
-                g3: document.getElementById('grad-3').value,
-                gDir: document.getElementById('grad-dir').value
-            };
-            localStorage.setItem('absensiConfig', JSON.stringify(config));
-            new Audio(rawURL + config.sound).play().catch(() => {});
-            toggleSettings();
+        /* =====================================
+           MODAL TEMA
+        ===================================== */
+        function tutupModalTema() {
+            document.getElementById('modal-tema').classList.remove('open');
+            resetNavActiveState();
         }
 
-        function updateStatusUI(pesan, warna) {
-            const s = document.getElementById('status-kirim');
-            s.innerText = pesan;
-            s.style.backgroundColor = warna;
-            s.style.display = "block";
-            setTimeout(() => { 
-                s.style.display = "none"; 
-                isProcessing = false; 
-                detectedBarcodes.clear(); 
-            }, 4000);
-        }
-
+        /* =====================================
+           BADGE ANTREAN
+        ===================================== */
         function updateJumlahAntreanBadge() {
             if (!db) return;
             const transaction = db.transaction(["antrean"], "readonly");
@@ -560,28 +1137,32 @@
             const req = store.count();
             req.onsuccess = () => {
                 const jml = req.result;
-                const btn = document.getElementById('btn-float-offline');
-                document.getElementById('label-jumlah-antrean').innerText = jml;
-                if (jml > 0) btn.classList.add('ada-data');
-                else btn.classList.remove('ada-data');
+                const badge = document.getElementById('badge-antrean-nav');
+                badge.innerText = jml;
+                if (jml > 0) badge.classList.add('visible');
+                else badge.classList.remove('visible');
             };
         }
-        //Mengirim data offline
+
+        /* =====================================
+           MODAL ANTREAN OFFLINE
+        ===================================== */
         function bukaModalAntrean(e) {
-            if(e) e.stopPropagation();
+            if (e) e.stopPropagation();
             const modal = document.getElementById('modal-antrean');
             const container = document.getElementById('daftar-item-antrean');
             document.getElementById('prog-cont').style.display = 'none';
             document.getElementById('loading-text').style.display = 'none';
-            container.innerHTML = "<p style='text-align:center;'>Memuat data...</p>";
+            container.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Memuat data...</p>";
             modal.style.display = 'flex';
+
             const transaction = db.transaction(["antrean"], "readonly");
             const store = transaction.objectStore("antrean");
             const req = store.getAll();
             req.onsuccess = function() {
                 const items = req.result;
                 if (items.length === 0) {
-                    container.innerHTML = "<p style='color:#999; text-align:center;'>Tidak ada data offline.</p>";
+                    container.innerHTML = "<p style='color:var(--text-muted); text-align:center;'>Tidak ada data offline.</p>";
                     document.getElementById('btn-kirim-manual').disabled = true;
                     document.getElementById('btn-kirim-manual').style.opacity = "0.5";
                     return;
@@ -590,14 +1171,13 @@
                 const textBtn = document.getElementById('text-btn-kirim');
                 btnKirim.disabled = false;
                 btnKirim.style.opacity = "1";
-                btnKirim.style.background = "var(--primary)";
                 textBtn.innerText = "KIRIM";
                 textBtn.classList.remove('loading-dots');
 
                 container.innerHTML = items.map(item => `
-                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-bottom:8px; border-left:4px solid #f39c12;">
-                        <strong style="font-size:14px;">${item.nama}</strong><br>
-                        <small style="color:#aaa;">Keterangan: ${item.keterangan}</small>
+                    <div style="background:rgba(255,255,255,.05); padding:10px; border-radius:12px; margin-bottom:8px; border-left:3px solid var(--accent-icon);">
+                        <strong style="font-size:14px; color:var(--text-main);">${item.nama}</strong><br>
+                        <small style="color:var(--text-muted);">Keterangan: ${item.keterangan}</small>
                     </div>
                 `).join('');
             };
@@ -605,11 +1185,12 @@
 
         function tutupModalAntrean() {
             document.getElementById('modal-antrean').style.display = 'none';
+            resetNavActiveState();
         }
 
         async function kirimManual() {
             if (!navigator.onLine) {
-                updateStatusUI("ⓘ ANDA SEDANG OFFLINE!\nSILAKAN HUBUNGKAN KE INTERNET TERLEBIH DAHULU", "#e67e22");
+                updateStatusUI("ⓘ ANDA SEDANG OFFLINE!\nSILAKAN HUBUNGKAN KE INTERNET", "#f39c12");
                 return;
             }
 
@@ -624,12 +1205,8 @@
 
             btnKirim.disabled = true;
             btnKirim.style.opacity = "0.6";
-            btnKirim.style.background = "#555";
-            
-            // AKTIFKAN ANIMASI ELLIPSIS (5 TITIK)
             textBtn.innerText = "MENGIRIM";
             textBtn.classList.add('loading-dots');
-            
             btnTutup.disabled = true;
 
             const transaction = db.transaction(["antrean"], "readwrite");
@@ -654,9 +1231,8 @@
                     const persen = ((i + 1) / dataAntrean.length) * 100;
                     progBar.style.width = persen + "%";
 
-                    await fetch(`${scriptURL}?nama=${encodeURIComponent(item.nama)}&keterangan=${encodeURIComponent(item.keterangan)}`, { 
-                        method: 'GET', 
-                        mode: 'no-cors' 
+                    await fetch(`${scriptURL}?nama=${encodeURIComponent(item.nama)}&keterangan=${encodeURIComponent(item.keterangan)}`, {
+                        method: 'GET', mode: 'no-cors'
                     });
 
                     const deleteTx = db.transaction(["antrean"], "readwrite");
@@ -664,28 +1240,27 @@
                     await new Promise(r => setTimeout(r, 100));
                 }
 
-                // --- FITUR BARU: NOTIFIKASI SUARA SELESAI ---
-        const config = JSON.parse(localStorage.getItem('absensiConfig')) || { sound: 'notification/Notif01.mp3' };
-        // Memutar suara 'Done.mp3' atau suara sukses lainnya saat antrean habis
-        const audioDone = new Audio(rawURL + 'notification/succes-data-offline.mp3'); 
-        audioDone.play().catch(e => console.log("Gagal memutar notifikasi suara:", e));
-        // --------------------------------------------
-                
+                const config = JSON.parse(localStorage.getItem('absensiConfig')) || { sound: 'notification/Notif01.mp3' };
+                const audioDone = new Audio(rawURL + 'notification/succes-data-offline.mp3');
+                audioDone.play().catch(e => console.log("Gagal memutar notifikasi:", e));
+
                 updateJumlahAntreanBadge();
-                updateStatusUI("✔ SEMUA DATA BERHASIL TERKIRIM!", "var(--primary)");
-                //TOMBOL KIRIM PADAM
+                updateStatusUI("✔ SEMUA DATA BERHASIL TERKIRIM!", "var(--accent-icon)");
+
                 setTimeout(() => {
                     tutupModalAntrean();
                     btnKirim.disabled = false;
                     btnTutup.disabled = false;
                     btnKirim.style.opacity = "1";
-                    btnKirim.style.background = "var(--primary)";
                     textBtn.innerText = "KIRIM";
                     textBtn.classList.remove('loading-dots');
                 }, 1500);
             };
         }
 
+        /* =====================================
+           SEND PRESENCE
+        ===================================== */
         function sendPresence(nama) {
             const ketValue = document.getElementById('keterangan').value;
             if (!ketValue) {
@@ -698,27 +1273,25 @@
             document.getElementById('last-name-display').value = nama;
             const config = JSON.parse(localStorage.getItem('absensiConfig')) || { sound: 'notification/Notif01.mp3' };
             new Audio(rawURL + config.sound).play().catch(() => {});
-            
+
             const dataPresensi = { nama: nama, keterangan: ketValue };
 
             if (navigator.onLine) {
-                updateStatusUI("✔ TERKIRIM: " + nama, "var(--primary)");
-                fetch(`${scriptURL}?nama=${encodeURIComponent(nama)}&keterangan=${encodeURIComponent(ketValue)}`, { 
-                    method: 'GET', 
-                    mode: 'no-cors',
-                    cache: 'no-store'
+                updateStatusUI("✔ TERKIRIM: " + nama, "var(--accent-icon)");
+                fetch(`${scriptURL}?nama=${encodeURIComponent(nama)}&keterangan=${encodeURIComponent(ketValue)}`, {
+                    method: 'GET', mode: 'no-cors', cache: 'no-store'
                 });
             } else {
                 simpanKeOffline(dataPresensi);
             }
-            
+
             document.getElementById('selection-overlay').style.display = 'none';
         }
 
         function simpanKeOffline(data) {
             if (!db) return;
             const config = JSON.parse(localStorage.getItem('absensiConfig')) || { sound: 'notification/Notif01.mp3' };
-            new Audio(rawURL + config.sound).play().catch(err => console.log("Gagal putar suara:", err));
+            new Audio(rawURL + config.sound).play().catch(() => {});
             const transaction = db.transaction(["antrean"], "readwrite");
             const store = transaction.objectStore("antrean");
             store.add(data);
@@ -735,12 +1308,16 @@
             const req = store.count();
             req.onsuccess = () => {
                 if (req.result > 0) {
-                    updateStatusUI("ⓘ ADA DATA OFFLINE!\nSILAKAN KIRIM DARI MENU ANTREAN", "#f39c12");
+                    updateStatusUI("ⓘ ADA DATA OFFLINE!\nSILAKAN KIRIM DARI MENU DATA OFFLINE", "#f39c12");
                 }
             };
         }
 
         window.addEventListener('online', sinkronkanData);
+
+        /* =====================================
+           QR SCANNER
+        ===================================== */
         applySettings();
         const html5QrCode = new Html5Qrcode("reader");
 
@@ -753,7 +1330,7 @@
                 if (results.length > 1) {
                     isProcessing = true;
                     const overlay = document.getElementById('selection-overlay');
-                    overlay.innerHTML = '<p style="color:white; font-size:12px; font-weight:bold; margin-bottom:10px;">TERDETEKSI ' + results.length + ' BARCODE. PILIH NAMA:</p>';
+                    overlay.innerHTML = `<p style="color:white; font-size:12px; font-weight:bold; margin-bottom:10px;">TERDETEKSI ${results.length} BARCODE. PILIH NAMA:</p>`;
                     results.forEach(nama => {
                         const btn = document.createElement('div');
                         btn.className = 'barcode-option';
@@ -763,12 +1340,14 @@
                     });
                     const btnBatal = document.createElement('div');
                     btnBatal.className = 'barcode-option';
-                    btnBatal.style.background = '#7f8c8d';
-                    btnBatal.innerText = 'BATAL SCAN ULANG';
-                    btnBatal.onclick = (e) => { 
+                    btnBatal.style.background = 'rgba(127,140,141,.4)';
+                    btnBatal.style.border = '1px solid rgba(255,255,255,.2)';
+                    btnBatal.style.boxShadow = 'none';
+                    btnBatal.innerText = 'BATAL — SCAN ULANG';
+                    btnBatal.onclick = (e) => {
                         e.stopPropagation();
-                        overlay.style.display = 'none'; 
-                        isProcessing = false; 
+                        overlay.style.display = 'none';
+                        isProcessing = false;
                         detectedBarcodes.clear();
                     };
                     overlay.appendChild(btnBatal);
@@ -781,11 +1360,14 @@
         }
 
         html5QrCode.start(
-            { facingMode: "environment" }, 
-            { fps: 20, qrbox: { width: 280, height: 280 } },
+            { facingMode: "environment" },
+            { fps: 20, qrbox: { width: 260, height: 260 } },
             handleScan
         ).catch(err => console.error(err));
 
+        /* =====================================
+           PWA INSTALL
+        ===================================== */
         let promptInstalasi;
         const popUp = document.getElementById('pwa-popup');
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -800,11 +1382,169 @@
             promptInstalasi = null;
         });
         document.getElementById('btnBatal').addEventListener('click', () => { popUp.style.display = 'none'; });
+
+        /* =====================================
+           SISTEM TEMA — dari index 1
+        ===================================== */
+        const DAFTAR_TEMA = {
+            "emerald": {
+                bodyBg:"linear-gradient(135deg,#051a0f 0%,#09331f 25%,#0d5a36 55%,#1a7a4a 75%,#0a4528 100%)",bodySolidBg:"#07261a",
+                glow1:"#198754",glow2:"#D4AF37",glow3:"#0ea56a",
+                glassBg:"linear-gradient(145deg,rgba(255,255,255,.14) 0%,rgba(25,135,84,.08) 50%,rgba(255,255,255,.06) 100%)",glassBorder:"rgba(255,255,255,.22)",
+                glassShadow:"0 12px 48px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.15)",
+                badgeBg:"linear-gradient(135deg,rgba(25,135,84,.4) 0%,rgba(212,175,55,.28) 100%)",badgeBorder:"rgba(212,175,55,.5)",
+                btnPrimaryBg:"linear-gradient(135deg,#22a161 0%,#1a7a4a 40%,#146c43 70%,#0F5132 100%)",
+                btnPrimaryHover:"linear-gradient(135deg,#2dbe78 0%,#22a161 40%,#198754 70%,#146c43 100%)",
+                btnShadow:"rgba(20,108,67,.55)",btnGlow:"0 0 28px rgba(25,135,84,.5),0 0 10px rgba(212,175,55,.2)",
+                panelAccentBg:"linear-gradient(135deg,rgba(5,20,12,.85) 0%,rgba(9,51,31,.7) 50%,rgba(14,82,52,.55) 100%)",panelAccentBorder:"rgba(212,175,55,.4)",
+                navDockBg:"linear-gradient(180deg,rgba(7,26,16,.95) 0%,rgba(5,18,10,.99) 100%)",navDockBorder:"rgba(212,175,55,.3)",
+                iconCirclePasif:"rgba(255,255,255,.12)",iconCircleReady:"linear-gradient(135deg,rgba(26,122,74,.85) 0%,rgba(20,108,67,.75) 100%)",iconCircleReadyBorder:"rgba(212,175,55,.65)",iconCircleReadyShadow:"0 4px 20px rgba(25,135,84,.55),0 0 12px rgba(212,175,55,.2)",iconCircleAktif:"linear-gradient(135deg,#D4AF37 0%,#f0c830 60%,#ffe066 100%)",iconTextAktif:"#0F5132",
+                accentIcon:"#D4AF37",scrollbarThumb:"rgba(212,175,55,.35)",themeColor:"#07261a",
+                textMain:"#ffffff",textMuted:"#c8e6d4",
+                inputBg:"rgba(255,255,255,.11)",inputBgHover:"rgba(255,255,255,.17)",inputText:"#ffffff",
+                inputBorder:"rgba(255,255,255,.22)",inputFocusBorder:"rgba(212,175,55,.75)",inputFocusBg:"rgba(25,135,84,.18)"
+            },
+            "biru-ungu": {
+                bodyBg:"linear-gradient(135deg,#050812 0%,#0b0f19 25%,#1e1b4b 50%,#312e81 70%,#1e1040 100%)",bodySolidBg:"#080b14",
+                glow1:"#4f46e5",glow2:"#7c3aed",glow3:"#818cf8",
+                glassBg:"linear-gradient(145deg,rgba(255,255,255,.1) 0%,rgba(79,70,229,.1) 50%,rgba(255,255,255,.05) 100%)",glassBorder:"rgba(129,140,248,.28)",
+                glassShadow:"0 12px 48px rgba(0,0,0,.55),0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(129,140,248,.2),inset 0 -1px 0 rgba(0,0,0,.2)",
+                badgeBg:"linear-gradient(135deg,rgba(79,70,229,.4) 0%,rgba(124,58,237,.3) 100%)",badgeBorder:"rgba(129,140,248,.5)",
+                btnPrimaryBg:"linear-gradient(135deg,#6366f1 0%,#4f46e5 40%,#6d28d9 70%,#7c3aed 100%)",
+                btnPrimaryHover:"linear-gradient(135deg,#818cf8 0%,#6366f1 40%,#7c3aed 70%,#8b5cf6 100%)",
+                btnShadow:"rgba(124,58,237,.55)",btnGlow:"0 0 28px rgba(99,102,241,.5),0 0 10px rgba(129,140,248,.2)",
+                panelAccentBg:"linear-gradient(135deg,rgba(11,15,25,.85) 0%,rgba(30,27,75,.7) 50%,rgba(49,46,129,.5) 100%)",panelAccentBorder:"rgba(129,140,248,.4)",
+                navDockBg:"linear-gradient(180deg,rgba(8,11,20,.95) 0%,rgba(4,6,12,.99) 100%)",navDockBorder:"rgba(129,140,248,.3)",
+                iconCirclePasif:"rgba(255,255,255,.1)",iconCircleReady:"linear-gradient(135deg,rgba(79,70,229,.85) 0%,rgba(124,58,237,.75) 100%)",iconCircleReadyBorder:"rgba(129,140,248,.7)",iconCircleReadyShadow:"0 4px 20px rgba(99,102,241,.55),0 0 12px rgba(129,140,248,.2)",iconCircleAktif:"linear-gradient(135deg,#818cf8 0%,#a5b4fc 60%,#c4b5fd 100%)",iconTextAktif:"#1e1b4b",
+                accentIcon:"#818cf8",scrollbarThumb:"rgba(129,140,248,.4)",themeColor:"#1e1b4b",
+                textMain:"#ffffff",textMuted:"#c7d2fe",
+                inputBg:"rgba(79,70,229,.12)",inputBgHover:"rgba(79,70,229,.2)",inputText:"#ffffff",
+                inputBorder:"rgba(129,140,248,.25)",inputFocusBorder:"rgba(129,140,248,.75)",inputFocusBg:"rgba(79,70,229,.2)"
+            },
+            "electric-blue": {
+                bodyBg:"linear-gradient(135deg,#060f22 0%,#0c1a3a 25%,#0f2a5a 50%,#1a3a6b 70%,#0c1a3a 100%)",bodySolidBg:"#060f22",
+                glow1:"#2f7dff",glow2:"#00c6ff",glow3:"#cb3dff",
+                glassBg:"linear-gradient(145deg,rgba(47,125,255,.13) 0%,rgba(0,198,255,.08) 50%,rgba(255,255,255,.05) 100%)",glassBorder:"rgba(0,198,255,.3)",
+                glassShadow:"0 12px 48px rgba(0,0,0,.55),0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(0,198,255,.2),inset 0 -1px 0 rgba(0,0,0,.18)",
+                badgeBg:"linear-gradient(135deg,rgba(47,125,255,.4) 0%,rgba(0,198,255,.28) 100%)",badgeBorder:"rgba(0,198,255,.55)",
+                btnPrimaryBg:"linear-gradient(135deg,#2563eb 0%,#1a5dcc 35%,#2f7dff 65%,#00c6ff 100%)",
+                btnPrimaryHover:"linear-gradient(135deg,#3b82f6 0%,#2f7dff 40%,#00c6ff 70%,#66d9ff 100%)",
+                btnShadow:"rgba(47,125,255,.6)",btnGlow:"0 0 28px rgba(0,198,255,.5),0 0 10px rgba(47,125,255,.25)",
+                panelAccentBg:"linear-gradient(135deg,rgba(6,15,34,.85) 0%,rgba(12,26,58,.7) 50%,rgba(26,58,107,.55) 100%)",panelAccentBorder:"rgba(0,198,255,.4)",
+                navDockBg:"linear-gradient(180deg,rgba(6,15,34,.96) 0%,rgba(3,8,18,.99) 100%)",navDockBorder:"rgba(0,198,255,.32)",
+                iconCirclePasif:"rgba(255,255,255,.1)",iconCircleReady:"linear-gradient(135deg,rgba(47,125,255,.85) 0%,rgba(0,198,255,.75) 100%)",iconCircleReadyBorder:"rgba(0,198,255,.75)",iconCircleReadyShadow:"0 4px 20px rgba(47,125,255,.6),0 0 12px rgba(0,198,255,.25)",iconCircleAktif:"linear-gradient(135deg,#00c6ff 0%,#66d9ff 60%,#99e9ff 100%)",iconTextAktif:"#0c1a3a",
+                accentIcon:"#00c6ff",scrollbarThumb:"rgba(0,198,255,.45)",themeColor:"#0c1a3a",
+                textMain:"#e0f0ff",textMuted:"#a0c8ff",
+                inputBg:"rgba(47,125,255,.13)",inputBgHover:"rgba(47,125,255,.22)",inputText:"#e0f0ff",
+                inputBorder:"rgba(0,198,255,.28)",inputFocusBorder:"rgba(0,198,255,.8)",inputFocusBg:"rgba(47,125,255,.22)"
+            },
+            "sunset-orange": {
+                bodyBg:"linear-gradient(135deg,#0d0802 0%,#1a0f05 25%,#3a1c05 50%,#7c2d00 70%,#1a0f05 100%)",bodySolidBg:"#0d0802",
+                glow1:"#ea580c",glow2:"#eab308",glow3:"#f97316",
+                glassBg:"linear-gradient(145deg,rgba(255,120,30,.11) 0%,rgba(234,88,12,.07) 50%,rgba(255,255,255,.04) 100%)",glassBorder:"rgba(249,115,22,.3)",
+                glassShadow:"0 12px 48px rgba(0,0,0,.55),0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(249,115,22,.2),inset 0 -1px 0 rgba(0,0,0,.18)",
+                badgeBg:"linear-gradient(135deg,rgba(234,88,12,.4) 0%,rgba(234,179,8,.28) 100%)",badgeBorder:"rgba(249,115,22,.55)",
+                btnPrimaryBg:"linear-gradient(135deg,#dc4f0a 0%,#c2410c 35%,#ea580c 65%,#f97316 100%)",
+                btnPrimaryHover:"linear-gradient(135deg,#ea580c 0%,#f97316 40%,#fb923c 70%,#fdba74 100%)",
+                btnShadow:"rgba(234,88,12,.6)",btnGlow:"0 0 28px rgba(249,115,22,.5),0 0 10px rgba(234,179,8,.22)",
+                panelAccentBg:"linear-gradient(135deg,rgba(13,8,2,.85) 0%,rgba(26,15,5,.7) 50%,rgba(58,28,5,.55) 100%)",panelAccentBorder:"rgba(249,115,22,.45)",
+                navDockBg:"linear-gradient(180deg,rgba(13,8,2,.96) 0%,rgba(6,4,0,.99) 100%)",navDockBorder:"rgba(249,115,22,.32)",
+                iconCirclePasif:"rgba(255,255,255,.1)",iconCircleReady:"linear-gradient(135deg,rgba(234,88,12,.85) 0%,rgba(194,65,12,.75) 100%)",iconCircleReadyBorder:"rgba(249,115,22,.7)",iconCircleReadyShadow:"0 4px 20px rgba(234,88,12,.6),0 0 12px rgba(234,179,8,.22)",iconCircleAktif:"linear-gradient(135deg,#f97316 0%,#fbbf24 60%,#fde68a 100%)",iconTextAktif:"#3a1c05",
+                accentIcon:"#f97316",scrollbarThumb:"rgba(249,115,22,.45)",themeColor:"#3a1c05",
+                textMain:"#fff7ed",textMuted:"#fed7aa",
+                inputBg:"rgba(255,140,30,.12)",inputBgHover:"rgba(255,140,30,.2)",inputText:"#fff7ed",
+                inputBorder:"rgba(249,115,22,.28)",inputFocusBorder:"rgba(249,115,22,.8)",inputFocusBg:"rgba(234,88,12,.2)"
+            },
+            "rose-galaxy": {
+                bodyBg:"linear-gradient(135deg,#0e0214 0%,#1a0520 25%,#2d0840 50%,#5b0f6b 70%,#1a0520 100%)",bodySolidBg:"#0e0214",
+                glow1:"#9333ea",glow2:"#ec4899",glow3:"#f472b6",
+                glassBg:"linear-gradient(145deg,rgba(147,51,234,.13) 0%,rgba(236,72,153,.08) 50%,rgba(255,255,255,.05) 100%)",glassBorder:"rgba(236,72,153,.3)",
+                glassShadow:"0 12px 48px rgba(0,0,0,.55),0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(244,114,182,.2),inset 0 -1px 0 rgba(0,0,0,.18)",
+                badgeBg:"linear-gradient(135deg,rgba(147,51,234,.4) 0%,rgba(236,72,153,.3) 100%)",badgeBorder:"rgba(244,114,182,.55)",
+                btnPrimaryBg:"linear-gradient(135deg,#a21caf 0%,#7e22ce 35%,#9333ea 65%,#c026d3 100%)",
+                btnPrimaryHover:"linear-gradient(135deg,#c026d3 0%,#9333ea 40%,#ec4899 70%,#f9a8d4 100%)",
+                btnShadow:"rgba(147,51,234,.6)",btnGlow:"0 0 28px rgba(236,72,153,.5),0 0 10px rgba(147,51,234,.25)",
+                panelAccentBg:"linear-gradient(135deg,rgba(14,2,20,.85) 0%,rgba(26,5,32,.7) 50%,rgba(45,8,64,.55) 100%)",panelAccentBorder:"rgba(236,72,153,.4)",
+                navDockBg:"linear-gradient(180deg,rgba(14,2,20,.96) 0%,rgba(7,1,10,.99) 100%)",navDockBorder:"rgba(236,72,153,.3)",
+                iconCirclePasif:"rgba(255,255,255,.1)",iconCircleReady:"linear-gradient(135deg,rgba(147,51,234,.85) 0%,rgba(192,38,211,.75) 100%)",iconCircleReadyBorder:"rgba(244,114,182,.7)",iconCircleReadyShadow:"0 4px 20px rgba(147,51,234,.6),0 0 12px rgba(236,72,153,.25)",iconCircleAktif:"linear-gradient(135deg,#ec4899 0%,#f9a8d4 60%,#fce7f3 100%)",iconTextAktif:"#2d0840",
+                accentIcon:"#f472b6",scrollbarThumb:"rgba(244,114,182,.45)",themeColor:"#2d0840",
+                textMain:"#fff0f8",textMuted:"#f9a8d4",
+                inputBg:"rgba(147,51,234,.13)",inputBgHover:"rgba(147,51,234,.22)",inputText:"#fff0f8",
+                inputBorder:"rgba(236,72,153,.28)",inputFocusBorder:"rgba(236,72,153,.8)",inputFocusBg:"rgba(147,51,234,.22)"
+            },
+            "ocean-teal": {
+                bodyBg:"linear-gradient(135deg,#011418 0%,#032028 25%,#053a4a 50%,#0e6680 70%,#032028 100%)",bodySolidBg:"#011418",
+                glow1:"#0891b2",glow2:"#06b6d4",glow3:"#22d3ee",
+                glassBg:"linear-gradient(145deg,rgba(8,145,178,.13) 0%,rgba(6,182,212,.08) 50%,rgba(255,255,255,.05) 100%)",glassBorder:"rgba(6,182,212,.3)",
+                glassShadow:"0 12px 48px rgba(0,0,0,.55),0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(34,211,238,.2),inset 0 -1px 0 rgba(0,0,0,.18)",
+                badgeBg:"linear-gradient(135deg,rgba(8,145,178,.4) 0%,rgba(6,182,212,.28) 100%)",badgeBorder:"rgba(34,211,238,.55)",
+                btnPrimaryBg:"linear-gradient(135deg,#0e7490 0%,#0e6680 35%,#0891b2 65%,#0ea5e9 100%)",
+                btnPrimaryHover:"linear-gradient(135deg,#0891b2 0%,#06b6d4 40%,#22d3ee 70%,#67e8f9 100%)",
+                btnShadow:"rgba(8,145,178,.6)",btnGlow:"0 0 28px rgba(6,182,212,.5),0 0 10px rgba(34,211,238,.22)",
+                panelAccentBg:"linear-gradient(135deg,rgba(1,20,24,.85) 0%,rgba(3,32,40,.7) 50%,rgba(5,58,74,.55) 100%)",panelAccentBorder:"rgba(6,182,212,.4)",
+                navDockBg:"linear-gradient(180deg,rgba(1,20,24,.96) 0%,rgba(0,8,10,.99) 100%)",navDockBorder:"rgba(6,182,212,.3)",
+                iconCirclePasif:"rgba(255,255,255,.1)",iconCircleReady:"linear-gradient(135deg,rgba(8,145,178,.85) 0%,rgba(14,102,128,.75) 100%)",iconCircleReadyBorder:"rgba(34,211,238,.7)",iconCircleReadyShadow:"0 4px 20px rgba(8,145,178,.6),0 0 12px rgba(6,182,212,.25)",iconCircleAktif:"linear-gradient(135deg,#06b6d4 0%,#67e8f9 60%,#a5f3fc 100%)",iconTextAktif:"#032028",
+                accentIcon:"#22d3ee",scrollbarThumb:"rgba(6,182,212,.45)",themeColor:"#053a4a",
+                textMain:"#e0f8ff",textMuted:"#a5f3fc",
+                inputBg:"rgba(8,145,178,.13)",inputBgHover:"rgba(8,145,178,.22)",inputText:"#e0f8ff",
+                inputBorder:"rgba(6,182,212,.28)",inputFocusBorder:"rgba(6,182,212,.8)",inputFocusBg:"rgba(8,145,178,.22)"
+            }
+        };
+
+        function pilihSistemTema(nama) {
+            const k = DAFTAR_TEMA[nama];
+            if (!k) return;
+            const r = document.documentElement;
+            document.body.style.backgroundColor = k.bodySolidBg;
+            r.style.setProperty('--body-bg', k.bodyBg);
+            r.style.setProperty('--body-solid-bg', k.bodySolidBg);
+            r.style.setProperty('--glow-1', k.glow1);
+            r.style.setProperty('--glow-2', k.glow2);
+            r.style.setProperty('--glow-3', k.glow3);
+            r.style.setProperty('--glass-bg', k.glassBg);
+            r.style.setProperty('--glass-border', k.glassBorder);
+            r.style.setProperty('--glass-shadow', k.glassShadow);
+            r.style.setProperty('--badge-bg', k.badgeBg);
+            r.style.setProperty('--badge-border', k.badgeBorder);
+            r.style.setProperty('--btn-primary-bg', k.btnPrimaryBg);
+            r.style.setProperty('--btn-primary-hover', k.btnPrimaryHover);
+            r.style.setProperty('--btn-shadow', k.btnShadow);
+            r.style.setProperty('--btn-glow', k.btnGlow);
+            r.style.setProperty('--panel-accent-bg', k.panelAccentBg);
+            r.style.setProperty('--panel-accent-border', k.panelAccentBorder);
+            r.style.setProperty('--nav-dock-bg', k.navDockBg);
+            r.style.setProperty('--nav-dock-border', k.navDockBorder);
+            r.style.setProperty('--icon-circle-pasif', k.iconCirclePasif);
+            r.style.setProperty('--icon-circle-ready', k.iconCircleReady);
+            r.style.setProperty('--icon-circle-ready-border', k.iconCircleReadyBorder);
+            r.style.setProperty('--icon-circle-ready-shadow', k.iconCircleReadyShadow);
+            r.style.setProperty('--icon-circle-aktif', k.iconCircleAktif);
+            r.style.setProperty('--icon-text-aktif', k.iconTextAktif);
+            r.style.setProperty('--accent-icon', k.accentIcon);
+            r.style.setProperty('--scrollbar-thumb', k.scrollbarThumb);
+            r.style.setProperty('--text-main', k.textMain);
+            r.style.setProperty('--text-muted', k.textMuted);
+            r.style.setProperty('--input-bg', k.inputBg);
+            r.style.setProperty('--input-bg-hover', k.inputBgHover);
+            r.style.setProperty('--input-text', k.inputText);
+            r.style.setProperty('--input-border', k.inputBorder);
+            r.style.setProperty('--input-focus-border', k.inputFocusBorder);
+            r.style.setProperty('--input-focus-bg', k.inputFocusBg);
+            const m = document.getElementById('metaThemeColor');
+            if (m) m.setAttribute('content', k.themeColor);
+            localStorage.setItem('presensi_tema', nama);
+        }
+
+        // Terapkan tema tersimpan saat load
+        (function() {
+            const saved = localStorage.getItem('presensi_tema') || 'emerald';
+            pilihSistemTema(saved);
+        })();
     </script>
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').then(() => console.log("SW Aktif!"));
-      }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(() => console.log("SW Aktif!"));
+        }
     </script>
 </body>
 </html>
